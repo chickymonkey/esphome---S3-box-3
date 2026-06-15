@@ -168,7 +168,7 @@ psram:
 # Enable Home Assistant API
 api:
   encryption:
-    key: "2RjZiRnfEH9jTZ7erINTEEgXHBnkwlEnsViXPfUWVp0="
+    key: "your_API"
   on_client_connected:
     - script.execute: draw_display
     - lambda: |-
@@ -182,7 +182,7 @@ api:
     - component.update: s3_box_lcd
 ota:
   - platform: esphome
-    password: "d8ff4b288fc4414f9c83ae58bc20b857"
+    password: "your_OTA"
 # Enable logging
 logger:
   level: DEBUG
