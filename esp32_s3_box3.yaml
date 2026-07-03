@@ -168,7 +168,7 @@ psram:
 # Enable Home Assistant API
 api:
   encryption:
-    key: "your_API"
+    key: "2RjZiRnfEH9jTZ7erINTEEgXHBnkwlEnsViXPfUWVp0="
   on_client_connected:
     - script.execute: draw_display
     - lambda: |-
@@ -182,7 +182,7 @@ api:
     - component.update: s3_box_lcd
 ota:
   - platform: esphome
-    password: "your_OTA"
+    password: "d8ff4b288fc4414f9c83ae58bc20b857"
 # Enable logging
 logger:
   level: DEBUG
@@ -1808,7 +1808,7 @@ binary_sensor:
     y_min: 48
     y_max: 122
     on_click:
-      min_length: 10ms
+      min_length: 50ms
       max_length: 500ms
       then:
         - homeassistant.action:
@@ -1911,8 +1911,8 @@ binary_sensor:
   - platform: touchscreen
     page_id: HAVC_page
     id: touch_fan1
-    x_min: 230
-    x_max: 304
+    x_min: 123
+    x_max: 197
     y_min: 48
     y_max: 122
     on_click:
@@ -2521,7 +2521,7 @@ display:
               } else {
                 snprintf(hour_str, sizeof(hour_str), "%02d:", hour_val);
               }
-              it.printf(25, 37, id(font_hour_large), TextAlign::TOP_LEFT, "%s", hour_str);
+              it.printf(25, 37, id(font_hour_large), amber, TextAlign::TOP_LEFT, "%s", hour_str);
 
               // Minutes
               char min_str[6];
@@ -2531,7 +2531,7 @@ display:
               } else {
                 snprintf(min_str, sizeof(min_str), "%02d", min_val);
               }
-              it.printf(207, 185, id(font_hour_large), TextAlign::CENTER, "%s", min_str);
+              it.printf(207, 185, id(font_hour_large), amber, TextAlign::CENTER, "%s", min_str);
 
               // AM or PM
               char am_pm[3];
