@@ -1,0 +1,2961 @@
+
+# This is for the S3 box without sensor module.
+## 1.7.1: two way volume, brightness sync.
+## 1.7.2: added chinese font support
+## 1.7.3: added 3rd column to the light page, and added bathroom exhaust fan to it.
+## 1.8: added weather on saver page, added bedside lamp.
+## 2.0: changed the display to lvgl, added animation to the Exhaust fan icon. 
+## created the original ha media player variable ${external_media_player_ha} pointing to "xiaomi_l05c_0979_play_control", due to the lack of "volume_set" in the new version of "Music assistant" 
+---
+substitutions:
+  firmware_ver: "2.0"
+  ##lights
+  light1: "light.aqara_hub_892a_lightbulb_892a"
+  light2: "light.tv_floor_lamp"
+  light3: "light.group_lights"
+  light4: "light.rumpus_light"
+  light5: "light.bedroom_lamp_1"
+  light6: "light.bedroom_lamp_2"
+  ##switches
+  fan_switch1: "switch.bathroom_fan"
+
+  #####  Media player (Entity ID without device type media_player, find this from home assistant device list)
+  external_media_player: esp32_s3_box_3b_v17_2
+  external_media_player_ha: esp32_s3_box_3b_v17_2
+  ##Scene list
+  scene1: scene.sleep
+  scene2: scene.morning
+  scene3: scene.movie_night
+  scene4: scene.away_home
+  ## End of HA entities list, don't change anything below:
+
+  ##volume
+  volume_min: 0.1
+  volume_max: 0.9
+  bar_x1: 50
+  bar_w: 230
+  bar_y1: 218
+  bar_h: 3
+  ##ESP32 local speaker ## Volume verticle Slider
+  local_volume_min: 0.1
+  local_volume_max: 0.9
+  local_bar_x1: 298
+  local_bar_w: 2
+  local_bar_y1: 70
+  local_bar_h: 130
+  ## Brightness vertical slider (left side)
+  brightness_min: 0.2
+  brightness_max: 1.0
+  bright_bar_x1: 20
+  bright_bar_w: 2
+  bright_bar_y1: 72
+  bright_bar_h: 130
+
+  loading_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/loading_320_240.png
+  idle_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/idle_320_240.png
+  #listening_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/listening_320_240.png
+  listening_illustration_file: https://raw.githubusercontent.com/chickymonkey/esphome/ceb4b22c604abc93c7b93dba7ec3510f9462e740/image/breathing_listening2_320.gif
+  thinking_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/thinking_320_240.png
+  replying_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/replying_320_240.png
+  error_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/error_320_240.png
+  timer_finished_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/timer_finished_320_240.png
+  ##Below added to show 4 icons on idle page and lights page.
+  idle_page_file: https://raw.githubusercontent.com/chickymonkey/esphome/ceb4b22c604abc93c7b93dba7ec3510f9462e740/image/idle_page_button320.jpg
+  scene_file: /config/esphome/images/s3box/scene_200.png
+  
+  loading_illustration_background_color: "000000"
+  idle_illustration_background_color: "000000"
+  listening_illustration_background_color: "FFFFFF"
+  thinking_illustration_background_color: "FFFFFF"
+  replying_illustration_background_color: "FFFFFF"
+  error_illustration_background_color: "000000"
+
+  voice_assist_idle_phase_id: "1"
+  voice_assist_listening_phase_id: "2"
+  voice_assist_thinking_phase_id: "3"
+  voice_assist_replying_phase_id: "4"
+  voice_assist_not_ready_phase_id: "10"
+  voice_assist_error_phase_id: "11"
+  voice_assist_muted_phase_id: "12"
+  voice_assist_timer_finished_phase_id: "20"
+
+#####  Days and months #####
+## Change the values on the right to match your locale ##
+  monday: Mon
+  tuesday: Tue
+  wednesday: Wed
+  thursday: Thu
+  friday: Fri
+  saturday: Sat
+  sunday: Sun
+
+  jan: Jan
+  feb: Feb
+  mar: Mar
+  apr: Apr
+  may: May
+  jun: Jun
+  jul: Jul
+  aug: Aug
+  sept: Sep
+  oct: Oct
+  nov: Nov
+  dec: Dec
+  # However, the Figtree font only contains Latin characters, so there is no point using this... unlessyou change the font configuration accordingly.
+  allowed_characters: " *!#%'()+,-./0123456789:;<>?@ABCDEFGHIJKLMNOPQRSTUVWYZ[]_abcdefghijklmnopqrstuvwxyz{|}°²³µ¿ÁÂÄÅÉÖÚßàáâãäåæçèéêëìíîðñòóôõöøùúûüýþāăąćčďĐđēėęěğĮįıļľŁłńňőřśšťũūůűųźŻżŽžơưșțΆΈΌΐΑΒΓΔΕΖΗΘΚΜΝΠΡΣΤΥΦάέήίαβγδεζηθικλμνξοπρςστυφχψωϊόύώАБВГДЕЖЗИКЛМНОПРСТУХЦЧШЪЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяёђєіїјљњћאבגדהוזחטיכלםמןנסעפץצקרשת،ءآأإئابةتجحخدذرزسشصضطظعغفقكلمنهوىيٹپچڈکხạảấầẩậắặẹẽếềểệỉịọỏốồổỗộớờởợụủứừửữựỳ—、一上不个中为主乾了些亮人任低佔何作供依侧係個側偵充光入全关冇冷几切到制前動區卧厅厨及口另右吊后吗启吸呀咗哪唔問啟嗎嘅嘛器圍在场執場外多大始安定客室家密寵对將小少左已帘常幫幾库度庫廊廚廳开式後恆感態成我戲戶户房所扇手打执把拔换掉控插摄整斯新明是景暗更最會有未本模機檯櫃欄次正氏水沒没洗活派温測源溫漏潮激濕灯為無煙照熱燈燥物狀玄现現瓦用發的盞目着睡私空窗立笛管節簾籬紅線红罐置聚聲脚腦腳臥色节著行衣解設調請謝警设调走路車车运連遊運過道邊部都量鎖锁門閂閉開關门闭除隱離電震霧面音頂題顏颜風风食餅餵가간감갔강개거게겨결경고공과관그금급기길깥꺼껐꼽나난내네놀누는능니다닫담대더데도동됐되된됨둡드든등디때떤뜨라래러렇렌려로료른를리림링마많명몇모무문물뭐바밝방배변보부불블빨뽑사산상색서설성세센션소쇼수스습시신실싱아안않알았애야어얼업없었에여연열옆오온완외왼요운움워원위으은을음의이인일임입있작잠장재전절정제져조족종주줄중줘지직진짐쪽차창천최추출충치침커컴켜켰쿠크키탁탄태탬터텔통트튼티파팬퍼폰표퓨플핑한함해했행혀현화활후휴힘，？"
+
+  # Add support for non-unicode characters by using better glyphset
+  font_glyphsets: "GF_Latin_Core"
+  # for Greek use "Noto Sans" for other languages use a compatible font family
+  font_family: Figtree
+  font_family_clock: Orbitron
+  font_glyphs: ' *&@!"''%()+=,-_.:°/$€£¥?0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyzÀàÁáÂâÃãÄäĀāĂăÅåǺǻẠạĄąÆæǼǽĆćĈĉČčĊċÇçĎďĐđÐðÈèÉéÊêẼẽĚěËëĒēĔĕĖėẸẹĘęĜĝǦǧĞğĠġĢģĤĥĦħıÌìÍíÎîĨĩÏïĪīĬĭİỊịĮįȷĴĵĶķĸĹĺĽľĻļŁłĿŀŃńÑñŇňŅņƝɲŊŋŉÒòÓóÔôÕõÖöŌōŎŏŐőỌọǪǫØøǾǿŒœŔŕŘřŖŗŚśŜŝŠšŞşȘșẞßŤťŢţȚțŦŧÞþÙùÚúÛûŨũÜüŪūŬŭŮůŰűỤụŲųẀẁẂẃŴŵẄẅỲỳÝýŶŷỸỹŸÿȲȳŹźŽžŻżĲĳƏə'
+  font_clock_glyphs: 'APMC0123456789°:- '
+esphome:
+  name: esp32-s3-box-3b-v17
+  friendly_name: ESP32 S3 Box 3b v17
+  on_boot:
+    priority: 600
+    then:
+      - script.execute: draw_display
+      - delay: 30s
+      - if:
+          condition:
+            lambda: return id(init_in_progress);
+          then:
+            - lambda: id(init_in_progress) = false;
+            - script.execute: draw_display
+      - homeassistant.action:
+          action: homeassistant.update_entity
+          data:
+            entity_id: media_player.${external_media_player}
+      - delay: 1s      ##Initialize volume from HA API - 
+      - lambda: |-
+          //Ext player variable init
+          if (id(ha_media_volume).has_state()) {
+            float vol = std::stof(id(ha_media_volume).state);
+            vol = roundf(vol * 100.0f) / 100.0f;
+            id(volume_value) = vol;
+            const int bar_x1 = ${bar_x1};
+            const int bar_w  = ${bar_w};
+            id(last_touch_x) = bar_x1 + (vol * bar_w);
+
+            ESP_LOGD("main", "On Boot - synced volume from HA: %.2f", vol);
+          } else {
+            ESP_LOGW("main", "No initial HA volume available on boot");
+          }
+
+      - component.update: s3_box_lcd
+
+esp32:
+  board: esp32s3box
+  flash_size: 16MB
+  cpu_frequency: 240MHz
+  framework:
+    type: esp-idf
+    version: recommended
+    sdkconfig_options:
+      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
+      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
+      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
+    advanced:
+      #Added for optimization
+      execute_from_psram: "true"
+      compiler_optimization: "PERF"
+psram:
+  mode: octal
+  speed: 80MHz
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "2RjZiRnfEH9jTZ7erINTEEgXHBnkwlEnsViXPfUWVp0="
+  on_client_connected:
+    - script.execute: draw_display
+    - lambda: |-
+        id(api_connection) = true;
+    - component.update: s3_box_lcd
+
+  on_client_disconnected:
+    - script.execute: draw_display
+    - lambda: |-
+        id(api_connection) = false;
+    - component.update: s3_box_lcd
+ota:
+  - platform: esphome
+    password: "d8ff4b288fc4414f9c83ae58bc20b857"
+# Enable logging
+logger:
+  level: DEBUG
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esp32-S3-Box-3B-v17"
+    password: "wifi12345"
+  on_connect:
+    - script.execute: draw_display
+  on_disconnect:
+    - script.execute: draw_display
+
+captive_portal:
+
+time:
+  - platform: homeassistant
+    id: ha_time
+    on_time:
+      - seconds: 0, 15, 30
+        then:
+          - lvgl.label.update:
+              id: saver_hour_label
+              text: !lambda |-
+                auto now = id(ha_time).now();
+                if (!now.is_valid()) return "";
+                int hour_val = now.hour % 12;
+                if (hour_val == 0) hour_val = 12;
+
+                char hour_str[6];
+                if (hour_val == 11) {
+                  snprintf(hour_str, sizeof(hour_str), "1 1");
+                } else {
+                  snprintf(hour_str, sizeof(hour_str), "%02d", hour_val);
+                }
+                return std::string(hour_str) + ":";
+
+          - lvgl.label.update:
+              id: saver_minute_label
+              text: !lambda |-
+                auto now = id(ha_time).now();
+                if (!now.is_valid()) return "";
+                int min_val = now.minute;
+
+                char min_str[6];
+                if (min_val == 11) {
+                  snprintf(min_str, sizeof(min_str), "1 1");
+                } else {
+                  snprintf(min_str, sizeof(min_str), "%02d", min_val);
+                }
+                return std::string(min_str);
+
+          - lvgl.label.update:
+              id: saver_ampm_label
+              text: !lambda |-
+                auto now = id(ha_time).now();
+                if (!now.is_valid()) return "";
+                return now.hour < 12 ? std::string("A\nM") : std::string("P\nM");
+
+          - lvgl.label.update:
+              id: saver_day_label
+              text: !lambda |-
+                auto now = id(ha_time).now();
+                if (!now.is_valid()) return "";
+
+                static const char *days[] = {
+                  "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+                };
+                return std::string(days[now.day_of_week - 1]);
+
+          - lvgl.label.update:
+              id: saver_date_label
+              text: !lambda |-
+                auto now = id(ha_time).now();
+                if (!now.is_valid()) return "";
+                return now.strftime("%d %b");
+            # Hide everything except hour/minute at 12:10 AM
+      - seconds: 0
+        minutes: 0
+        hours: 0,1,2,3,4,5
+        then:
+          - script.execute: saver_night_mode_hide
+
+      # Show everything again at 7:00 AM
+      - seconds: 0
+        minutes: 0
+        hours: 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
+        then:
+          - script.execute: saver_night_mode_show
+
+http_request:
+  verify_ssl: 'false'
+  buffer_size_tx: 1024
+  buffer_size_rx: 1024
+
+interval:
+  ##weather API
+  - interval: 3min
+    then:
+      - http_request.get:
+          url: "http://api.open-meteo.com/v1/forecast?latitude=-37.81&longitude=144.96&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=Australia%2FSydney"
+          capture_response: true
+          on_response:
+            then:
+              - logger.log:
+                  format: "HTTP connection established. Status code: %d"
+                  args: [ 'response->status_code' ]
+
+              - if:
+                  condition:
+                    lambda: 'return response->status_code == 200;'
+
+                  then:
+                    - lambda: |-
+
+                        ESP_LOGI("weather", "Parsing JSON ...");
+
+                        DynamicJsonDocument doc(1024);
+                        auto error = deserializeJson(doc, body);
+
+                        if (error) {
+                          ESP_LOGE("weather",
+                            "JSON parse failed: %s",
+                            error.c_str());
+                          return;
+                        }
+
+                        JsonObject daily = doc["daily"];
+
+                        if (daily.isNull()) {
+                          ESP_LOGE("weather",
+                            "'daily' section not found");
+                          return;
+                        }
+
+                        // Extract weather_code
+                        // int weather = daily["weather_code"][0];
+
+                          int code = daily["weather_code"][0].as<int>();
+                          std::string condition;
+                          if (code == 0 || code == 1) {
+                            condition = "Sunny";
+                          } else if (code == 2 || code == 3) {
+                            condition = "Cloudy";
+                          } else if (code >= 51 && code <= 67) {
+                            condition = "Rainy";
+                          } else if (code >= 71 && code <= 77) {
+                            condition = "Cold Rain";
+                          } else if (code >= 80 && code <= 82) {
+                            condition = "Rainy";
+                          } else if (code >= 95) {
+                            condition = "Stormy";
+                          } else {
+                            condition = "Cloudy";
+                          }
+                        id(api_weather_state).publish_state(condition);
+                        //ESP_LOGI("weather", "Weather code: %d", weather);
+
+                        //Extract max temp
+                        float temp_max = daily["temperature_2m_max"][0];
+
+                        ESP_LOGI("weather",
+                          "Max temp: %.1f",
+                          temp_max);
+
+                        id(temperature_max)
+                          ->publish_state(temp_max);
+
+                        //Extract min temp
+
+                        float temp_min =
+                          daily["temperature_2m_min"][0];
+
+                        ESP_LOGI("weather",
+                          "Min temp: %.1f",
+                          temp_min);
+
+                        id(temperature_min)
+                          ->publish_state(temp_min);
+
+                  else:
+                    - logger.log:
+                        format: "HTTP Error: %d"
+                        args: [ 'response->status_code' ]
+  - interval: 100ms
+    then:
+      - if:
+          condition:
+            binary_sensor.is_on: fan1_state #use is_off for test, change to is_on once the animation is working perfect.
+          then:
+            - lvgl.label.update:
+                id: fan1_icon_label
+                transform_rotation: !lambda |-
+                  static int a = 0;
+                  a = (a + 100) % 3600;
+                  return a;
+                transform_pivot_x: 23
+                transform_pivot_y: 23
+button:
+  - platform: factory_reset
+    id: factory_reset_btn
+    internal: true
+
+output:
+  - platform: ledc
+    pin: GPIO47
+    id: backlight_output
+
+  - platform: ledc
+    id: out_led_red
+    pin: GPIO39         # PMOD Red
+    frequency: 1000 Hz  # smooth enough for LEDs
+
+  - platform: ledc
+    id: out_led_green
+    pin: GPIO40         # PMOD Green
+    frequency: 1000 Hz
+
+  - platform: ledc
+    id: out_led_blue
+    pin: GPIO41         # PMOD Blue
+    frequency: 1000 Hz
+
+light:
+  - platform: monochromatic
+    id: led
+    name: Screen
+    icon: "mdi:television"
+    internal: True
+    entity_category: config
+    output: backlight_output
+    restore_mode: RESTORE_DEFAULT_ON
+    default_transition_length: 250ms
+
+  - platform: rgb
+    id: status_led
+    name: "PMOD Status LED"
+    icon: "mdi:led-on"
+    red: out_led_red
+    green: out_led_green
+    blue: out_led_blue
+    default_transition_length: 200ms
+    effects:
+      - pulse:
+          name: "Slow Pulse"
+          transition_length: 380ms
+          update_interval: 380ms
+          min_brightness: 40%
+          max_brightness: 100%
+      - pulse:
+          name: "Fast Pulse"
+          transition_length: 130ms
+          update_interval: 130ms
+          min_brightness: 50%
+          max_brightness: 80%
+      - strobe:
+          name: "Strobe Effect"
+          colors:
+            - state: true
+              brightness: 100%
+              red: 0%
+              green: 0%
+              blue: 100%
+              duration: 500ms
+              transition_length: 300ms
+            - state: false
+              duration: 200ms
+              transition_length: 300ms
+            - state: true
+              brightness: 100%
+              red: 0%
+              green: 100%
+              blue: 0%
+              duration: 500ms
+              transition_length: 300ms
+i2c:
+  - id: i2c_adc_dac
+    scl: GPIO18
+    sda: GPIO8
+
+i2s_audio:
+  - id: i2s_audio_bus
+    i2s_lrclk_pin:
+      number: GPIO45
+      ignore_strapping_warning: true
+    i2s_bclk_pin: GPIO17
+    i2s_mclk_pin: GPIO2
+
+audio_adc:
+  - platform: es7210
+    i2c_id: i2c_adc_dac
+    id: es7210_adc
+    bits_per_sample: 16bit
+    sample_rate: 16000
+
+audio_dac:
+  - platform: es8311
+    i2c_id: i2c_adc_dac
+    id: es8311_dac
+    bits_per_sample: 16bit
+    sample_rate: 48000
+
+microphone:
+  - platform: i2s_audio
+    id: box_mic
+    sample_rate: 16000
+    i2s_din_pin: GPIO16
+    bits_per_sample: 16bit
+    adc_type: external
+
+
+speaker:
+  - platform: i2s_audio
+    id: box_speaker
+    i2s_dout_pin: GPIO15
+    dac_type: external
+    sample_rate: 48000
+    bits_per_sample: 16bit
+    channel: left
+    audio_dac: es8311_dac
+    buffer_duration: 100ms
+  
+media_player:
+  - platform: speaker
+    name: None
+    id: speaker_media_player
+    volume_min: 0.3
+    volume_max: 0.9
+    volume_initial: 0.75
+    task_stack_in_psram: true
+    announcement_pipeline:
+      speaker: box_speaker
+      format: FLAC
+      sample_rate: 48000
+      num_channels: 1
+    files:
+      - id: timer_finished_sound
+        file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
+
+    on_announcement:
+      # Stop the wake word (mWW or VA) if the mic is capturing
+      - if:
+          condition:
+            - microphone.is_capturing:
+          then:
+            - script.execute: stop_wake_word
+            # Ensure VA stops before moving on
+            - if:
+                condition:
+                  - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+                then:
+                  - wait_until:
+                      - not:
+                          voice_assistant.is_running:
+      # Since VA isn't running, this is user-intiated media playback. Draw the mute display
+      - if:
+          condition:
+            and:
+              - media_player.is_announcing:
+              - not:
+                  voice_assistant.is_running:
+          then:
+            - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+            - script.execute: draw_display
+    on_idle:
+      # Since VA isn't running, this is the end of user-intiated media playback. Restart the wake word.
+      - if:
+          condition:
+            and:
+              - not:
+                  voice_assistant.is_running:
+              - lambda: return !id(local_volume_adjusting);
+          then:
+            - script.execute: start_wake_word
+            - script.execute: set_idle_or_mute_phase
+            - script.execute: draw_display
+
+micro_wake_word:
+  id: mww
+  models:
+    - hey_jarvis
+  on_wake_word_detected:
+    - voice_assistant.start:
+        wake_word: !lambda return wake_word;
+
+voice_assistant:
+  id: va
+  microphone: box_mic
+  media_player: speaker_media_player
+  micro_wake_word: mww
+  noise_suppression_level: 2
+  auto_gain: 31dBFS
+  volume_multiplier: 3.5
+  on_listening:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
+    - light.turn_on:
+        id: led
+        brightness: !lambda 'return id(screen_brightness_value);'
+
+    - text_sensor.template.publish:
+        id: text_response
+        state: "..."
+    - lvgl.page.show: listening_page
+    - script.execute: draw_display
+    - light.turn_on:
+        id: status_led
+        # Purple = Red + Blue, no Green
+        red: 10%
+        green: 0%
+        blue: 100%
+        brightness: 60% 
+        effect: "Strobe Effect"
+    
+  on_stt_vad_end:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_thinking_phase_id};
+    - script.execute: draw_display
+    - light.turn_on:
+        id: status_led
+        blue: 100%
+        red: 0%
+        green: 85%
+        effect: "Fast Pulse"
+  on_stt_end:
+    - script.execute: draw_display
+  on_tts_start:
+    - text_sensor.template.publish:
+        id: text_response
+        state: !lambda return x;
+    - lambda: id(voice_assistant_phase) = ${voice_assist_replying_phase_id};
+    - script.execute: draw_display
+
+    - light.turn_on:
+        id: status_led
+        blue: 100%
+        red: 0%
+        green: 0%
+        brightness: 100%
+        effect: "Slow Pulse"
+  on_end:
+    # Wait a short amount of time to see if an announcement starts
+    - wait_until:
+        condition:
+          - media_player.is_announcing:
+        timeout: 1s
+    # Announcement is finished and the I2S bus is free
+    - wait_until:
+        - and:
+            - not:
+                media_player.is_announcing:
+            - not:
+                speaker.is_playing:
+    # Restart only mWW if enabled; streaming wake words automatically restart
+    - if:
+        condition:
+          - lambda: return id(wake_word_engine_location).state == "On device";
+        then:
+          - lambda: id(va).set_use_wake_word(false);
+          - micro_wake_word.start:
+    - script.execute: set_idle_or_mute_phase
+    - script.execute: draw_display
+    # Clear text sensors
+    - text_sensor.template.publish:
+        id: text_response
+        state: ""
+    - light.turn_off:
+        id: status_led
+    - lvgl.page.show: idle_page
+    - delay: 5s
+    - lvgl.widget.hide: global_notice_overlay
+  on_error:
+    - if:
+        condition:
+          lambda: return !id(init_in_progress);
+        then:
+          - lambda: id(voice_assistant_phase) = ${voice_assist_error_phase_id};
+          - script.execute: draw_display
+          - delay: 1s
+          - if:
+              condition:
+                switch.is_off: mute
+              then:
+                - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+              else:
+                - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+          - script.execute: draw_display
+    - lvgl.widget.hide: global_notice_overlay
+  on_client_connected:
+    - lambda: id(init_in_progress) = false;
+    - script.execute: start_wake_word
+    - script.execute: set_idle_or_mute_phase
+    - script.execute: draw_display
+  on_client_disconnected:
+    - script.execute: stop_wake_word
+    - lambda: id(voice_assistant_phase) = ${voice_assist_not_ready_phase_id};
+    - script.execute: draw_display
+  #timer
+  on_timer_started:
+    - script.execute: draw_display
+  on_timer_cancelled:
+    - script.execute: draw_display
+    - light.turn_off: status_led
+  on_timer_updated:
+    - script.execute: draw_display
+  on_timer_tick:
+    - script.execute: draw_display
+    - light.turn_on:
+        id: status_led
+        blue: 0%
+        red: 100%
+        green: 50%
+        brightness: 100%
+        effect: "Slow Pulse"
+  on_timer_finished:
+    - switch.turn_on: timer_ringing
+    - lvgl.page.show: timer_finished_page
+    - component.update: s3_box_lcd
+    #original setting.
+    - wait_until:
+        media_player.is_announcing:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_timer_finished_phase_id};
+    - script.execute: draw_display
+    - light.turn_on:
+        id: status_led
+        blue: 100%
+        red: 100%
+        green: 0%
+        effect: "Fast Pulse"
+
+script:
+  - id: draw_display
+    then:
+      # If still initializing, just show that
+      - if:
+          condition:
+            lambda: return id(init_in_progress);
+          then:
+            - lvgl.label.update:
+                id: va_phase_label
+                text: "Init..."
+            - lvgl.label.update:
+                id: va_phase_label
+                text: ""
+            - lvgl.label.update:
+                id: va_response_label
+                text: ""
+            - lvgl.widget.redraw: va_phase_label
+            - lvgl.widget.redraw: va_response_label
+            
+
+      # Not initializing: check connectivity and update accordingly
+      - if:
+          condition:
+            wifi.connected:
+          then:
+            - if:
+                condition:
+                  api.connected:
+                then:
+                  # Connected to HA: show phase + last response
+                  - lvgl.label.update:
+                      id: va_phase_label
+                      text: !lambda |-
+                        switch (id(voice_assistant_phase)) {
+                          case 1:  return "Idle";
+                          case 2:  return "Listening...";
+                          case 3:  return "Thinking...";
+                          case 4:  return "Replying...";
+                          case 10: return "Not ready";
+                          case 11: return "Error";
+                          case 12: return "Muted";
+                          case 20: return "Timer finish";
+                          default: return "Idle";
+                        }
+                  - lvgl.label.update:
+                      id: va_response_label
+                      text: !lambda return id(text_response).state.c_str();
+                      text_color: white
+                  - lvgl.label.update:
+                      id: va_status_label
+                      # Wifi Good, HA good
+                      text: "\U000F16BD \U000F07D1"
+                      text_font: roboto_icons_25
+                  - lvgl.widget.redraw: va_phase_label
+                  - lvgl.widget.redraw: va_response_label
+                  - lvgl.widget.redraw: idle_timer_label
+                else:
+                  # No HA: show status; clear response
+                  - lvgl.label.update:
+                      id: va_status_label
+                      # Wifi Good, No HA
+                      text: "\U000F16BD \U000F1A35"
+                      text_font: roboto_icons_25
+                      text_color: red
+                  - lvgl.widget.show: global_notice_overlay
+                  - lvgl.label.update:
+                      id: va_phase_label
+                      text: "No HA"
+                  - lvgl.label.update: { id: va_response_label, text: "Connect to wifi name ${wifi_name}, and reconnect to your home wifi" }
+                  
+                  - lvgl.widget.redraw: va_status_label
+                  - lvgl.widget.redraw: va_phase_label    
+                  - lvgl.widget.redraw: va_response_label
+                  - lvgl.widget.redraw: idle_timer_label
+          else:
+            # No Wi‑Fi: show status; clear response
+            - lvgl.label.update:
+                id: va_status_label
+                text: "\U000F16BC"
+                text_font: icon_font_25
+            - lvgl.label.update: { id: va_response_label, text: "" }
+            - lvgl.widget.redraw: va_phase_label
+            - lvgl.widget.redraw: va_response_label
+            - lvgl.widget.redraw: idle_timer_label
+      - script.execute: update_timer_progress
+  - id: fetch_first_active_timer
+    then:
+      - lambda: |
+          const auto &timers = id(va).get_timers();
+          auto output_timer = *timers.begin();
+          for (const auto &timer : timers) {
+            if (timer.is_active && timer.seconds_left <= output_timer.seconds_left) {
+              output_timer = timer;
+            }
+          }
+          id(global_first_active_timer) = output_timer;
+
+  - id: check_if_timers_active
+    then:
+      - lambda: |
+          const auto &timers = id(va).get_timers();
+          bool output = false;
+          for (const auto &timer : timers) {
+            if (timer.is_active) {
+              output = true;
+            }
+          }
+          id(global_is_timer_active) = output;
+
+  - id: fetch_first_timer
+    then:
+      - lambda: |
+          const auto &timers = id(va).get_timers();
+          auto output_timer = *timers.begin();
+          for (const auto &timer : timers) {
+            if (timer.seconds_left <= output_timer.seconds_left) {
+              output_timer = timer;
+            }
+          }
+          id(global_first_timer) = output_timer;
+
+  - id: check_if_timers
+    then:
+      - lambda: |
+          const auto &timers = id(va).get_timers();
+          bool output = false;
+          for (const auto &timer : timers) {
+            if (timer.is_active) {
+              output = true;
+            }
+          }
+          id(global_is_timer) = output;
+
+  # Starts either mWW or the streaming wake word, depending on the configured location
+  - id: start_wake_word
+    then:
+      - if:
+          condition:
+            and:
+              - not:
+                  - voice_assistant.is_running:
+              - lambda: return id(wake_word_engine_location).state == "On device";
+          then:
+            - lambda: id(va).set_use_wake_word(false);
+            - micro_wake_word.start:
+      - if:
+          condition:
+            and:
+              - not:
+                  - voice_assistant.is_running:
+              - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+          then:
+            - lambda: id(va).set_use_wake_word(true);
+            - voice_assistant.start_continuous:
+
+  # Stops either mWW or the streaming wake word, depending on the configured location
+  - id: stop_wake_word
+    then:
+      - if:
+          condition:
+            lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+          then:
+            - lambda: id(va).set_use_wake_word(false);
+            - voice_assistant.stop:
+      - if:
+          condition:
+            lambda: return id(wake_word_engine_location).state == "On device";
+          then:
+            - micro_wake_word.stop:
+
+  # Set the voice assistant phase to idle or muted, depending on if the software mute switch is activated
+  - id: set_idle_or_mute_phase
+    then:
+      - if:
+          condition:
+            switch.is_off: mute
+          then:
+            - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+          else:
+            - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+
+  # Go to saver page, disable idle_timer_active
+  - id: saver_enabled
+    then:
+      - lvgl.page.show: saver_page
+      - lambda: |-
+          // cancel timer in saver_page, save the pre-saver brightness value
+          id(idle_timer_active) = false;
+          id(pre_saver_brightness_value) = id(screen_brightness_value);
+
+  # Timer script waits 60s, then goes to saver_page if still idle
+  - id: idle_page_timer
+    mode: restart
+    then:
+      - lambda: |-
+          id(idle_timer_active) = true;
+      - delay: 60s
+      - if:
+          condition:
+            lambda: 'return id(idle_timer_active);'
+          then:
+            - light.turn_on:
+                id: led
+                brightness: 40%
+                transition_length: 315ms
+            - script.execute: saver_enabled
+
+  # refresh lights page
+  - id: refresh_light_page
+    parameters:
+      entity: string
+    then:
+      - delay: 350ms
+      - homeassistant.action:
+          action: homeassistant.update_entity
+          data:
+            entity_id: !lambda 'return entity;'
+      - lvgl.page.show: lights_page
+
+  - id: my_media_pause
+    then:
+      - homeassistant.action:
+          action: media_player.media_pause
+          data:
+            entity_id: media_player.${external_media_player}
+      - delay: 200ms
+      - lvgl.page.show: ext_media_page
+
+  - id: my_media_play
+    then:
+      - homeassistant.action:
+          action: media_player.media_play
+          data:
+            entity_id: media_player.${external_media_player}
+      - delay: 200ms
+      - lvgl.page.show: ext_media_page
+
+  - id: local_volume_reset_timer
+    then:
+      - delay: 1s
+      - lambda: |-
+          id(local_volume_adjusting) = false;
+          ESP_LOGD("main", "Local volume adjust finished");
+
+  # External status LED
+  - id: reset_led
+    then:
+      - if:
+          condition:
+            - lambda: return id(wake_word_engine_location).state == "On device";
+            - switch.is_on: use_listen_light
+          then:
+            - light.turn_on:
+                id: status_led
+                red: 100%
+                green: 89%
+                blue: 71%
+                brightness: 60%
+                effect: none
+          else:
+            - if:
+                condition:
+                  - lambda: return id(wake_word_engine_location).state != "On device";
+                  - switch.is_on: use_listen_light
+                then:
+                  - light.turn_on:
+                      id: status_led
+                      red: 0%
+                      green: 100%
+                      blue: 100%
+                      brightness: 60%
+                      effect: none
+                else:
+                  - light.turn_off: status_led
+
+  # "All lights" button (touch_alllight) had on_double_click. LVGL has no
+  # native double-click event, so this replicates it with a click-timestamp
+  # comparison. Requires the `alllight_last_click` global (see globals: below).
+  - id: detect_alllight_double_click
+    then:
+      - if:
+          condition:
+            lambda: 'return (millis() - id(alllight_last_click)) < 400;'
+          then:
+            - homeassistant.action:
+                action: light.turn_off
+                data:
+                  entity_id: ${light3}
+                on_error:
+                  - logger.log: "Failed to toggle ${light3}"
+          else:
+            - lambda: 'id(alllight_last_click) = millis();'
+
+  - id: saver_night_mode_hide
+    then:
+      - lvgl.widget.hide: saver_weather_icon_label
+      - lvgl.widget.hide: saver_min_temp_label
+      - lvgl.widget.hide: saver_max_temp_label
+      - lvgl.widget.hide: saver_ampm_label
+      - lvgl.widget.hide: saver_day_label
+      - lvgl.widget.hide: saver_date_label
+      - lvgl.widget.hide: va_phase_label
+
+  - id: saver_night_mode_show
+    then:
+      - lvgl.widget.show: saver_weather_icon_label
+      - lvgl.widget.show: saver_min_temp_label
+      - lvgl.widget.show: saver_max_temp_label
+      - lvgl.widget.show: saver_ampm_label
+      - lvgl.widget.show: saver_day_label
+      - lvgl.widget.show: saver_date_label
+      - lvgl.widget.show: va_phase_label
+
+  - id: refresh_lights_page_icons
+    then:
+      - lvgl.label.update:
+          id: light1_icon_label
+          text: !lambda 'return id(light1_state).state ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return id(light1_state).state ? Color(255,165,0) : Color(200,200,200);'
+      - lvgl.label.update:
+          id: light2_icon_label
+          text: !lambda 'return id(light2_state).state ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return id(light2_state).state ? Color(255,165,0) : Color(200,200,200);'
+      - lvgl.label.update:
+          id: light3_icon_label
+          text: !lambda 'return id(light3_state).state ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return id(light3_state).state ? Color(255,165,0) : Color(200,200,200);'
+      - lvgl.label.update:
+          id: light4_icon_label
+          text: !lambda 'return id(light4_state).state ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return id(light4_state).state ? Color(255,165,0) : Color(200,200,200);'
+      - lvgl.label.update:
+          id: light5_icon_label
+          text: !lambda 'return id(light5_state).state ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return id(light5_state).state ? Color(255,165,0) : Color(200,200,200);'
+      - lvgl.label.update:
+          id: light6_icon_label
+          text: !lambda 'return id(light6_state).state ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return id(light6_state).state ? Color(255,165,0) : Color(200,200,200);'
+
+  - id: update_timer_progress
+    then:
+      - lambda: |-
+          // Get all timers (now std::vector<Timer> since ESPHome 2026.2)
+          const auto &timers = id(va).get_timers();
+          bool has_any = !timers.empty();
+
+          // Choose the soonest ACTIVE timer; else the soonest overall
+          bool has_active = false;
+          voice_assistant::Timer chosen = has_any ? timers.front() : voice_assistant::Timer{};
+          if (has_any) {
+            for (const auto &t : timers) {
+              if (t.is_active) {
+                if (!has_active || t.seconds_left <= chosen.seconds_left) {
+                  chosen = t;
+                }
+                has_active = true;
+              }
+            }
+            if (!has_active) {
+              for (const auto &t : timers) {
+                if (t.seconds_left <= chosen.seconds_left) {
+                  chosen = t;
+                }
+              }
+            }
+          }
+
+          // Compute percentage remaining (0..100), clamp
+          int pct = 0;
+          if (has_any) {
+            const uint32_t total = chosen.total_seconds > 0 ? chosen.total_seconds : 1;
+            pct = (int) roundf(100.0f * (float) chosen.seconds_left / (float) total);
+            if (pct < 0) pct = 0;
+            if (pct > 100) pct = 100;
+          }
+
+          // Store results for later updates
+          id(timer_progress_has_timer) = has_any;
+          id(timer_progress_seconds_left) = has_any ? (int) chosen.seconds_left : 0;
+          
+      - if:
+          condition:
+            lambda: |-
+              return id(timer_progress_has_timer) && (id(timer_progress_seconds_left) > 0);
+
+          then:
+            # Update the center label text: HH:MM:SS if >=1h, else MM:SS
+            - lvgl.label.update:
+                id: timer_progress_text
+                text: !lambda |-
+                  int sec = id(timer_progress_seconds_left);
+                  char buf[16];
+                  if (sec >= 3600) {
+                    int h = sec / 3600;
+                    int m = (sec % 3600) / 60;
+                    int s = sec % 60;
+                    snprintf(buf, sizeof(buf), "%d:%02d:%02d", h, m, s);
+                  } else {
+                    int m = sec / 60;
+                    int s = sec % 60;
+                    snprintf(buf, sizeof(buf), "%02d:%02d", m, s);
+                  }
+                  return std::string(buf);
+
+            - lvgl.widget.update:
+               id: global_notice_overlay
+               hidden: false
+            - lvgl.label.update:
+               id: timer_progress_text
+               hidden: false
+            - lvgl.label.update:
+               id: va_phase_label
+               hidden: false
+           
+          else:
+            - lvgl.widget.update:
+                id: global_notice_overlay
+                hidden: true
+            - lvgl.label.update:
+               id: timer_progress_text
+               hidden: true
+            - lvgl.label.update:
+               id: va_phase_label
+               hidden: true
+
+#end of script
+switch:
+  - platform: gpio
+    name: Speaker Enable
+    pin:
+      number: GPIO46
+      ignore_strapping_warning: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+    disabled_by_default: true
+
+  - platform: template
+    name: Mute
+    id: mute
+    icon: "mdi:microphone-off"
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config
+    on_turn_off:
+      - microphone.unmute:
+      - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+      - script.execute: draw_display
+    on_turn_on:
+      - microphone.mute:
+      - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+      - script.execute: draw_display
+  - platform: template
+    id: timer_ringing
+    optimistic: true
+    internal: true
+    restore_mode: ALWAYS_OFF
+    on_turn_off:
+      # Turn off the repeat mode and disable the pause between playlist items
+      - lambda: |-
+              id(speaker_media_player)
+                ->make_call()
+                .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_OFF)
+                .set_announcement(true)
+                .perform();
+              id(speaker_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 0);
+      # Stop playing the alarm
+      - media_player.stop:
+          announcement: true
+    on_turn_on:
+      # Turn on the repeat mode and pause for 1000 ms between playlist items/repeats
+      - lambda: |-
+            id(speaker_media_player)
+              ->make_call()
+              .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_ONE)
+              .set_announcement(true)
+              .perform();
+            id(speaker_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 1000);
+      #make sure volume is not too small for alarm.
+      - speaker.volume_set:
+          id: box_speaker
+          volume: 80%
+
+      - media_player.speaker.play_on_device_media_file:
+          media_file: timer_finished_sound
+          announcement: true
+      ##play for 5 minutes.
+      - delay: 5min
+      - switch.turn_off: timer_ringing
+  #Mute for external player - Music assitant player doesn't support this, so setting to 1%
+  - platform: template
+    id: ext_media_mute
+    icon: 'mdi:volume-off'
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config
+    on_turn_on:
+      then:
+        - lambda: |-
+            if (id(ha_media_volume).has_state()) {
+              float vol_temp = std::stof(id(ha_media_volume).state);
+              vol_temp = roundf(vol_temp * 100.0f) / 100.0f;
+              id(pre_mute_volume_value) = vol_temp;
+            }
+        - homeassistant.action:
+            action: media_player.volume_mute
+            data:
+              entity_id: media_player.${external_media_player_ha}
+              is_volume_muted: "true"
+        - lvgl.label.update: 
+            id: ext_mute_icon_label
+            text_color: red
+    on_turn_off:
+      - homeassistant.action:
+          action: media_player.volume_set
+          data:
+            entity_id: media_player.${external_media_player_ha}
+            volume_level: !lambda 'return id(pre_mute_volume_value);'
+      - homeassistant.action:
+          action: media_player.volume_mute
+          data:
+            entity_id: media_player.${external_media_player_ha}
+            is_volume_muted: "false"
+      - lvgl.label.update: 
+            id: ext_mute_icon_label
+            text_color: green
+  - platform: template
+    id: local_media_mute
+    icon: 'mdi:volume-off'
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config
+    on_turn_on:
+      then:
+        - homeassistant.action:
+            action: media_player.volume_set
+            data:
+              entity_id: media_player.speaker_media_player
+              volume_level: "0"
+    on_turn_off:
+      - homeassistant.action:
+          action: media_player.volume_set
+          data:
+            entity_id: media_player.speaker_media_player
+            volume_level: !lambda 'return id(local_volume_value);'
+  #External Status LED script
+  - platform: template
+    name: Use listen light
+    id: use_listen_light
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+    on_turn_on:
+      - script.execute: reset_led
+    on_turn_off:
+      - script.execute: reset_led
+
+select:
+  - platform: template
+    entity_category: config
+    name: Wake word engine location
+    id: wake_word_engine_location
+    icon: "mdi:account-voice"
+    optimistic: true
+    restore_value: true
+    options:
+      - In Home Assistant
+      - On device
+    initial_option: On device
+    on_value:
+      - if:
+          condition:
+            lambda: return !id(init_in_progress);
+          then:
+            - wait_until:
+                lambda: return id(voice_assistant_phase) == ${voice_assist_muted_phase_id} || id(voice_assistant_phase) == ${voice_assist_idle_phase_id};
+            - if:
+                condition:
+                  lambda: return x == "In Home Assistant";
+                then:
+                  - micro_wake_word.stop
+                  - delay: 500ms
+                  - if:
+                      condition:
+                        switch.is_off: mute
+                      then:
+                        - lambda: id(va).set_use_wake_word(true);
+                        - voice_assistant.start_continuous:
+            - if:
+                condition:
+                  lambda: return x == "On device";
+                then:
+                  - lambda: id(va).set_use_wake_word(false);
+                  - voice_assistant.stop
+                  - delay: 500ms
+                  - if:
+                      condition:
+                        switch.is_off: mute
+                      then:
+                        - micro_wake_word.start
+
+globals:
+  - id: init_in_progress
+    type: bool
+    restore_value: false
+    initial_value: "true"
+  - id: voice_assistant_phase
+    type: int
+    restore_value: false
+    initial_value: ${voice_assist_not_ready_phase_id}
+  - id: global_first_active_timer
+    type: voice_assistant::Timer
+    restore_value: false
+  - id: global_is_timer_active
+    type: bool
+    restore_value: false
+  - id: global_first_timer
+    type: voice_assistant::Timer
+    restore_value: false
+  - id: global_is_timer
+    type: bool
+    restore_value: false
+  ##below added for touch
+  - id: api_connection
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: idle_timer_active
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  # Response text scroll
+  - id: resp_offset
+    type: int
+    restore_value: no
+    initial_value: '0'
+  # Response text word wrap
+  - id: resp_line_offset
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+  #speaker volume
+  ## External volume_value used by touch to draw volume slider
+  - id: volume_value
+    type: float
+    restore_value: yes
+  #    initial_value: '0.5'
+  - id: pre_mute_volume_value
+    type: float
+    restore_value: no
+  - id: last_touch_x
+    type: int
+    restore_value: no
+  #    initial_value: '150'
+  # used by esp32_player slider >
+  - id: local_volume_value
+    type: float
+    restore_value: yes
+    initial_value: '0.65'
+
+  - id: local_volume_adjusting
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  
+  # Brightness value
+  - id: screen_brightness_value
+    type: float
+    restore_value: yes
+    initial_value: '0.85'
+
+  - id: pre_saver_brightness_value
+    type: float
+    restore_value: no
+
+  # Last touch position on brightness bar
+  - id: bright_last_touch_y
+    type: int
+    restore_value: no
+    #initial_value: '150'
+
+  - id: bright_adjusting
+    type: bool
+    restore_value: no
+    initial_value: "false"
+    
+  - id: alllight_last_click
+    type: uint32_t
+    initial_value: "0"
+  #timer
+  - id: timer_progress_has_timer
+    type: bool
+    #set to restore timer on reboot
+    restore_value: yes
+    initial_value: "false"
+
+  - id: timer_progress_seconds_left
+    type: int
+    restore_value: yes
+    initial_value: "0"
+image:
+  - file: ${error_illustration_file}
+    id: casita_error
+    resize: 320x240
+    type: RGB
+    transparency: alpha_channel
+  - file: ${idle_illustration_file}
+    id: casita_idle
+    resize: 320x240
+    type: RGB
+    transparency: alpha_channel
+  - file: ${listening_illustration_file}
+    id: casita_listening
+    resize: 320x240
+    type: RGB
+    transparency: alpha_channel
+  - file: ${thinking_illustration_file}
+    id: casita_thinking
+    resize: 320x240
+    type: RGB
+    transparency: alpha_channel
+  - file: ${replying_illustration_file}
+    id: casita_replying
+    resize: 320x240
+    type: RGB
+    transparency: alpha_channel
+  - file: ${timer_finished_illustration_file}
+    id: casita_timer_finished
+    resize: 320x240
+    type: RGB
+    transparency: alpha_channel
+  - file: ${loading_illustration_file}
+    id: casita_initializing
+    resize: 320x240
+    type: RGB
+    transparency: alpha_channel
+  - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-wifi.png
+    id: error_no_wifi
+    resize: 320x240
+    type: RGB
+    transparency: alpha_channel
+  - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-ha.png
+    id: error_no_ha
+    resize: 320x240
+    type: RGB
+    transparency: alpha_channel
+  - file: ${idle_page_file}
+    id: idle_page_image
+    resize: 320x240
+    type: RGB
+  - file: ${scene_file}
+    id: scene_image
+    resize: 200x186
+    type: RGB
+font:
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 300
+      italic: true
+    id: font_request
+    size: 15
+    glyphsets:
+      - ${font_glyphsets}
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 400
+    id: font_response
+    size: 15
+    glyphsets:
+      - ${font_glyphsets}
+  - file:
+      type: gfonts
+      family: ${font_family_clock}
+      weight: 700
+    id: font_timer
+    size: 62
+    glyphs: "APMC0123456789°:- "
+      
+  ## Touch screen
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 400
+    id: font_date
+    size: 31
+    glyphsets:
+      - ${font_glyphsets}
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 500
+    id: font_time
+    size: 50
+    glyphsets:
+      - ${font_glyphsets}
+
+  - file:
+      type: gfonts
+      family: ${font_family_clock}
+      weight: 500
+    id: font_saver_temp
+    size: 36
+    glyphs: "APMC0123456789°:- "
+
+  - file:
+      type: gfonts
+      family: ${font_family_clock}
+      weight: 500
+    id: font_hour_large
+    size: 105
+    glyphs: "APMC0123456789°:- "
+
+  - file:
+      type: gfonts
+      family: ${font_family_clock}
+      weight: 500
+    id: font_saver_small
+    size: 33
+    glyphs: "APMC0123456789°:- "
+  
+  - file:
+      type: gfonts
+      family: ${font_family_clock}
+      weight: 400
+    id: font_status
+    size: 23
+    glyphsets:
+      - GF_Latin_Core
+  #alarm font
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 500
+    id: font_pin
+    size: 40
+    glyphsets:
+      - ${font_glyphsets}
+  #icon font 45
+  - file: "https://github.com/chickymonkey/esphome/raw/refs/heads/main/font/materialdesignicons-webfont.ttf"
+    id: icon_font_45
+    size: 45
+    glyphs: &icon_glyphs
+      - "\U000F009E"#bell
+      - "\U000F0150"#clock
+      - "\U000F01AE"#gbp pound symbol
+      - "\U000F0210"#fan
+      - "\U000F0238"#heating
+      - "\U000F024A"#garden/flower
+      - "\U000F0335"#light bulb off
+      - "\U000F036C"#microphone on
+      - "\U000F036D"#microphone off
+      - "\U000F036F"#voice settings
+      - "\U000F03E4"#pause
+      - "\U000F040A"#play
+      - "\U000F040E"#play/pause
+      - "\U000F0493"#settings cog
+      - "\U000F04AD"#next track
+      - "\U000F04AE"#previous track
+      - "\U000F04B9"#living room
+      - "\U000F04DB"#stop
+      - "\U000F0502"#screen settings
+      - "\U000F050F"#temp sensor
+      - "\U000F0521"#toggle on
+      - "\U000F057E"#speaker on
+      - "\U000F0581"#speaker off
+      - "\U000F05CB"#voice
+      - "\U000F068A"#alarm home
+      - "\U000F06E8"#light bulb illuminated
+      - "\U000F075A"#music
+      - "\U000F075D"#vol plus
+      - "\U000F075E"#vol minus
+      - "\U000F0769"#ceiling
+      - "\U000F07D0"#api connected
+      - "\U000F07F4"#tv
+      - "\U000F087B"#api disconnected
+      - "\U000F08D6"#settings
+      - "\U000F099D"#alarm away
+      - "\U000F099E"#disarmed
+      - "\U000F0A19"#toggle off
+      - "\U000F0B26"#down
+      - "\U000F0B28"#left
+      - "\U000F0B2A"#right
+      - "\U000F0B2C"#up
+      - "\U000F0B6C"#car battery
+      - "\U000F0D90"#screen off
+      - "\U000F0EBA"#stats
+      - "\U000F0ED4"#voice off
+      - "\U000F0FCE"#scene
+      - "\U000F1061"#dining
+      - "\U000F10CD"#battery warning
+      - "\U000F1160"#kitchen
+      - "\U000F12A8"#touch button
+      - "\U000F12D3"#garage closed
+      - "\U000F12D4"#garage open
+      - "\U000F1322"#tools
+      - "\U000F16BC"#wifidisconnected
+      - "\U000F16BD"#wifi connected
+      - "\U000F1722"#fire off
+      - "\U000F1747"#tall lamp
+      - "\U000F1828"#armed night
+      - "\U000F192D"#electricity
+      - "\U000F1A12"#home button
+      - "\U000F1A1B"#gas
+      - "\U000F1C3B"#battery charging/usb powered
+      - "\U000F1C6F"#info
+      - "\U000F0590" #cloudy
+      - "\U000F0596" #rainy
+      - "\U000F05A8" #sunny
+      - "\U000F0593" #storm
+      - "\U000F059D" #windy
+      - "\U000F0594" #clear night
+  - file: "https://github.com/chickymonkey/esphome/raw/refs/heads/main/font/materialdesignicons-webfont.ttf"
+    id: icon_font_25
+    size: 25
+    glyphs: &icon_glyphs_25
+      - "\U000F009E"#bell
+      - "\U000F0150"#clock
+      - "\U000F01AE"#gbp pound symbol
+      - "\U000F0210"#fan
+      - "\U000F0238"#heating
+      - "\U000F024A"#garden/flower
+      - "\U000F0335"#light bulb off
+      - "\U000F036C"#microphone on
+      - "\U000F036D"#microphone off
+      - "\U000F036F"#voice settings
+      - "\U000F03E4"#pause
+      - "\U000F040A"#play
+      - "\U000F040E"#play/pause
+      - "\U000F0493"#settings cog
+      - "\U000F04AD"#next track
+      - "\U000F04AE"#previous track
+      - "\U000F04B9"#living room
+      - "\U000F04DB"#stop
+      - "\U000F0502"#screen settings
+      - "\U000F050F"#temp sensor
+      - "\U000F0521"#toggle on
+      - "\U000F057E"#speaker on
+      - "\U000F0581"#speaker off
+      - "\U000F05CB"#voice
+      - "\U000F068A"#alarm home
+      - "\U000F06E8"#light bulb illuminated
+      - "\U000F075A"#music
+      - "\U000F075D"#vol plus
+      - "\U000F075E"#vol minus
+      - "\U000F0769"#ceiling
+      - "\U000F07D0"#api connected
+      - "\U000F07F4"#tv
+      - "\U000F087B"#api disconnected
+      - "\U000F08D6"#settings
+      - "\U000F099D"#alarm away
+      - "\U000F099E"#disarmed
+      - "\U000F0A19"#toggle off
+      - "\U000F0B26"#down
+      - "\U000F0B28"#left
+      - "\U000F0B2A"#right
+      - "\U000F0B2C"#up
+      - "\U000F0B6C"#car battery
+      - "\U000F0D90"#screen off
+      - "\U000F0EBA"#stats
+      - "\U000F0ED4"#voice off
+      - "\U000F0FCE"#scene
+      - "\U000F1061"#dining
+      - "\U000F10CD"#battery warning
+      - "\U000F1160"#kitchen
+      - "\U000F12A8"#touch button
+      - "\U000F12D3"#garage closed
+      - "\U000F12D4"#garage open
+      - "\U000F1322"#tools
+      - "\U000F16BC"#wifidisconnected
+      - "\U000F16BD"#wifi connected
+      - "\U000F1722"#fire off
+      - "\U000F1747"#tall lamp
+      - "\U000F192D"#electricity
+      - "\U000F1A12"#home button
+      - "\U000F1A1B"#gas
+      - "\U000F1C3B"#battery charging/usb powered
+      - "\U000F1C6F"#info
+  - file: "https://github.com/chickymonkey/esphome/raw/refs/heads/main/font/materialdesignicons-webfont.ttf"
+    id: icon_font_80
+    size: 75
+    glyphs: *icon_glyphs
+
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 300
+    id: my_font1
+    size: 22
+    glyphsets:
+      - ${font_glyphsets}
+
+  - file: "/config/esphome/font/hpsimplifiedhans-regular.ttf"
+    id: music_title_font
+    size: 22
+    glyphs:
+      - " []()+=,-_.:!@*{}`|°~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+      - "。，“”王力宏花田错歌之海枯石烂一直很安静路上有你首简单的下沙游鸿明不要对他说张信哲中国话为写诗亚瑟小子爱我莫文蔚传奇在知道事是心内承诺背包仰倔强别怕伤十年陈奕迅吴克群残废周华健没会让想起因情墨尔本晴夜曲杰伦大城太早孤勇者宽容富士山就陶喆屋顶布兰妮英版美少女祈祷希望广岛恋庐州月许嵩真学友碎了无痕和去吹风敬轩吻得逼韶涵亲那彩虹天堂往後余生貳浪徐誉滕使翅膀跳忠孝东走九遍快乐崇拜忽然间多后悔配们好都样麦受手放开拥抱拯救改变自己断点赖曹格叛李圣痴绝楼个人江南林俊么清雨温柔五雪演员薛谦如潮水转移独家记忆唯场戏梦存以活男洋白光足突等分钟红玫瑰老与落叶归根蓝色解脱谎贾斯汀越纯幸福过火遇见孙燕姿什浮夸绮贞旅行意义丽镇姑娘找暗蝴蝶晶莹委屈预感黑柳丁龙能秘密吗亭序园时机第七章最长电影枫烟圈易冷甜祝日稻香给蒲公约定呢超飞跨代整青瓷毛衣做两森难依舍罪当忘卡片钥匙动求留用疼些音阴抗拒颜迈逊冰万练习缠绵千理由毒珍贵偷別她来听唱果这算刀割到书儿也谢呼吸痛气可惜三星杜伟跟辈杨嬅瓶座柴盐酱醋茶梁咏琪价孟婆汤灰象葬礼滴泪素煌袁惟仁醒旭浆条退春瘤菌团荆棘鱼眼豆齐井庾澄庆泥地出而看发成只把还作种总从面但现前所同又方期它头经位名法世次身被高已其进此常正问几特外孩相西将实向声车全重工物每并打新比才便夫再部像体却加主界门利表先口死性马或住教命结更拉神处母父应字平报关至认接告入笑军候民岁何度觉带边叫任金原吃妈通师立数四失满战远轻目病始达深完今提化空业思切怎非罗钱语元喜曾离科干流欢各即指合反题必该论交终请医晚制球决画保读运及则房院量苦品近坐产答精视连司巴管类未朋且婚台北队久乎观尽形爸百令吧识步术市半热送兴造谈极随收讲式取照办古拿计您装似双妻尼诉米称客领节站刻统故历惊脸选紧争另建维树系示愿持史准联妇纪基买志阿"
+  - file: "gfonts://Roboto+Condensed"
+    id: roboto_icons_25
+    size: 25
+    bpp: 4
+    extras:
+      - file: "https://github.com/chickymonkey/esphome/raw/refs/heads/main/font/materialdesignicons-webfont.ttf"
+        glyphs: [
+          "\U000F02D1", # mdi-heart
+          "\U000F05D4", # mdi-airplane-landing
+          "\U000F0076", #shopping basket
+          "\U000F0110", #shopping cart
+          "\U000F044C", # recycle bin
+          "\U000F07D1", # HA-house with wifi
+          "\U000F1A35",   # HA offline
+          "\U000F16BD", #wifi connected
+          "\U000F16BC",  #wifidisconnected
+          "\U000F0241", #lightening
+          "\U000F050F" #thermometer
+          ]
+color:
+  - id: idle_color
+    hex: ${idle_illustration_background_color}
+  - id: listening_color
+    hex: ${listening_illustration_background_color}
+  - id: thinking_color
+    hex: ${thinking_illustration_background_color}
+  - id: replying_color
+    hex: ${replying_illustration_background_color}
+  - id: loading_color
+    hex: ${loading_illustration_background_color}
+  - id: error_color
+    hex: ${error_illustration_background_color}
+  - id: active_timer_color
+    hex: '26ed3a'
+  - id: paused_timer_color
+    hex: '3b89e3'
+  - id: black
+    hex: '000000'
+  - id: white
+    hex: 'ffffff'
+  - id: purple
+    hex: '73264D'
+  - id: light_blue
+    hex: 'CFE2F3'
+  - id: green
+    hex: '75D15F'
+  - id: red
+    hex: 'FF3131'
+  - id: blue
+    hex: '47B7E9'
+  - id: blue_drk
+    hex: '085296'
+  - id: amber
+    hex: 'FBAB35'
+  - id: lime
+    hex: '20FC30'
+  - id: pink
+    hex: 'D92BBC'
+  - id: yellow
+    hex: 'FFC000'
+
+
+spi:
+  - id: spi_bus
+    clk_pin: 7
+    mosi_pin: 6
+
+#touch screen, must come before binary sensor and display.
+touchscreen:
+  - platform: gt911
+    i2c_id: i2c_adc_dac
+    update_interval: 120ms
+    address: 0x5D
+    id: gt911_touchscreen
+    interrupt_pin:
+      number: GPIO3
+      ignore_strapping_warning: true
+    on_touch:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(saver_page)->is_showing();'
+            then:
+              - delay: 350ms
+              - lvgl.page.show: idle_page
+              - lambda: |-
+                  ESP_LOGD("main", "Touch detected → going from saver page to idle page");
+                  // Restore the brightness from pre-saver value
+                  float restore = id(pre_saver_brightness_value);
+                  if (restore < 0.1f || restore > 1.0f) restore = 0.8f;
+                  id(screen_brightness_value) = restore;
+            else:
+              - lambda: |-
+                  id(idle_timer_active) = true;
+                  ESP_LOGD("main", "Touch detected →  Just reset the timer countdown");
+              - script.execute: idle_page_timer
+        - delay: 220ms
+        - light.turn_on:
+            id: led
+            brightness: !lambda 'return id(screen_brightness_value);'
+            transition_length: 220ms
+
+text_sensor:
+  - id: text_response
+    platform: template
+    on_value:
+      then:
+        - lambda: |-
+            ESP_LOGD("text_response", "New response: %s", id(text_response).state.c_str());
+            id(resp_line_offset) = 0;
+        - lvgl.label.update:
+            id: va_response_label
+            text: !lambda 'return id(text_response).state;'
+        - lvgl.widget.show: va_response_label
+        - lvgl.widget.show: global_notice_overlay
+  
+  ##external media status friendly_name
+  - platform: homeassistant
+    entity_id: media_player.${external_media_player}
+    id: ha_friendly_name
+    attribute: friendly_name
+    on_value:
+      component.update: s3_box_lcd
+  - platform: homeassistant
+    entity_id: media_player.${external_media_player}
+    id: ha_media_status
+    on_value:
+      component.update: s3_box_lcd
+  - platform: homeassistant
+    entity_id: media_player.${external_media_player}
+    id: ha_media_title
+    attribute: media_title
+    on_value:
+      component.update: s3_box_lcd
+  - platform: homeassistant
+    id: ha_media_volume
+    entity_id: media_player.${external_media_player}
+    attribute: volume_level
+    on_value:
+      then:
+        - lambda: |-
+            if (id(ha_media_volume).has_state()) {
+              // Convert string to float and Round to 2 decimal points
+              float vol = std::stof(id(ha_media_volume).state);
+              vol = roundf(vol * 100.0f) / 100.0f;
+
+              // Update global volume and dot position
+              id(volume_value) = vol;
+
+              const int bar_x1 = ${bar_x1};
+              const int bar_w  = ${bar_w};
+              id(last_touch_x) = bar_x1 + (vol * bar_w);
+
+              ESP_LOGD("main", "Volume synced from HA: %.2f", vol);
+
+              // Refresh the display so bar updates immediately
+              id(s3_box_lcd).update();
+            } else {
+              ESP_LOGW("main", "No valid HA media volume state");
+            }
+        - component.update: s3_box_lcd
+  #Weather text
+  - platform: homeassistant
+    id: weather_state
+    entity_id: weather.berwick
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: saver_weather_icon_label
+            text: !lambda |-
+              std::string w = x;
+              std::transform(w.begin(), w.end(), w.begin(), ::tolower);
+
+              std::string icon = "\U000F0590";  // default: cloudy
+              if (w == "sunny") {
+                icon = "\U000F05A8";
+              } else if (w.find("rain") != std::string::npos) {
+                icon = "\U000F0596";
+              } else if (w == "lightning" || w == "lightning-rainy") {
+                icon = "\U000F0593";
+              } else if (w == "windy" || w == "windy-variant") {
+                icon = "\U000F059D";
+              } else if (w == "clear-night") {
+                icon = "\U000F0594";
+              } else if (w == "cloudy" || w == "partlycloudy") {
+                icon = "\U000F0590";
+              } else if (w.find("fog") != std::string::npos) {
+                icon = "\U000F0590";
+              }
+              return icon;
+              
+  ##API weather condition
+  - platform: template
+    name: "Melbourne Weather"
+    id: api_weather_state
+    on_value: 
+      then:
+        - component.update: s3_box_lcd
+
+sensor:
+  #Home assistant sensor values
+  - platform: homeassistant #"Min Temp Today"
+    id: min_temp_today
+    name: "Min Temp Today"
+    entity_id: sensor.temp_min_today
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: saver_min_temp_label
+            text: !lambda |-
+              return str_sprintf("%.0f", x) + " -";
+              
+  - platform: homeassistant #"Max Temp Today"
+    id: max_temp_today
+    name: "Max Temp Today"
+    entity_id: sensor.temp_max_today
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: saver_max_temp_label
+            text: !lambda |-
+              return str_sprintf("%.0f", x) + " °C";
+  
+  #API data sensor
+  - platform: template
+    name: "Temperature Min"
+    id: temperature_min
+    unit_of_measurement: "°C"
+    
+  - platform: template
+    name: "Temperature Max"
+    id: temperature_max
+    unit_of_measurement: "°C" 
+    
+  # External Volume sensor
+  - platform: homeassistant
+    id: ext_media_volume_state
+    entity_id: media_player.${external_media_player}
+    attribute: volume_level
+    on_value:
+      then:
+        - lvgl.slider.update:
+            id: ext_media_volume_slider
+            value: !lambda 'return int(x * 100);'
+        - lvgl.label.update:
+            id: ext_media_volume_pct_label
+            text: !lambda 'return str_sprintf("Vol: %d%%", int(x * 100));'
+display:
+  - platform: mipi_spi
+    model: S3BOX
+    invert_colors: false
+    id: s3_box_lcd
+    #change from 40MHz to 20MHz will create more RAM for Voice Assistant response
+    data_rate: 20MHz
+    cs_pin: 5
+    dc_pin: 4
+    reset_pin:
+      number: 48
+      inverted: true
+    update_interval: 35s
+    on_page_change:
+      then:
+        - lambda: |-
+            auto *page = id(s3_box_lcd).get_active_page();
+            // idle_timer control
+            if (id(saver_page)->is_showing()) {
+              // Start/restart the idle timer
+              id(idle_timer_active) = false;
+            } else {
+              id(idle_timer_active) = true;
+              // restart timer whenever non-saver page shown
+              id(idle_page_timer).execute();
+            }
+lvgl:
+  id: lvgl_comp
+  displays:
+    - s3_box_lcd
+  touchscreens:
+    - gt911_touchscreen
+  bg_opa: cover
+  style_definitions:
+    - id: transparent_btn_style
+      bg_opa: transp
+      border_width: 0
+      shadow_width: 0
+      outline_width: 0
+      radius: 0
+      pad_all: 0
+  top_layer: # VA status and 
+    styles: transparent_btn_style   
+    y: 0
+    height: 55
+    border_width: 0
+    shadow_width: 0
+    outline_width: 0
+    radius: 0
+    scrollbar_mode: "off"
+    scrollable: False
+    scroll_dir: "none"
+    widgets:
+      - obj:
+          id: global_notice_overlay
+          x: 0
+          y: 0
+          width: 320
+          height: 55
+          bg_color: black
+          bg_opa: COVER
+          hidden: true
+          border_width: 0
+          shadow_width: 0
+          outline_width: 0
+          radius: 0
+          scrollbar_mode: "off"
+          scrollable: False
+          scroll_dir: "none"
+          widgets:
+            - label:
+                id: va_response_label
+                align: BOTTOM_LEFT
+                x: 5
+                y: -2
+                width: 210
+                long_mode: SCROLL_CIRCULAR
+                text_color: white
+                text: ""
+                text_font: font_request
+                hidden: true
+            - label:
+                id: va_phase_label
+                x: 220
+                y: 2
+                text_color: white
+                text: ""
+                text_font: font_status
+                hidden: true
+            - label:
+                id: timer_progress_text
+                align: CENTER
+                text_align: CENTER
+                width: 260
+                height: 45
+                text_color: white
+                text: ""
+                text_font: font_saver_temp
+                hidden: true
+                
+  pages:
+    - id: saver_page
+      bg_color: black
+      scrollbar_mode: "off"
+      scrollable: False
+      scroll_dir: "none"
+      on_load:
+        - lambda: |-
+            id(idle_timer_active) = false;
+
+      widgets:
+        - label:
+            id: saver_weather_icon_label
+            x: 35
+            y: 10
+            text_color: white
+            text_font: icon_font_45
+            text: ""   # set via sensor on_value
+
+        - label:
+            id: saver_min_temp_label
+            x: 100
+            y: 5
+            text_color: white
+            text_font: font_saver_temp
+            text: ""
+        - label:
+            id: saver_max_temp_label
+            x: 165
+            y: 5
+            text_color: white
+            text_font: font_saver_temp
+            text: ""
+        
+        - obj:
+            x: 20
+            y: 58
+            width: 280
+            height: 2
+            bg_color: white
+
+        - label:
+            id: saver_hour_label
+            x: 25
+            y: 37
+            text_font: font_hour_large
+            text_color: amber
+            text: ""
+        - label:
+            id: saver_ampm_label
+            x: 238
+            y: 65
+            text_color: amber
+            text_font: font_saver_small
+            text: ""
+        - label:
+            id: saver_minute_label
+            x: 135
+            y: 125
+            text_font: font_hour_large
+            text_color: amber
+            text: ""
+        - label:
+            id: saver_day_label
+            x: 27
+            y: 160
+            text_color: white 
+            text_font: font_date
+            text: ""
+
+        - label:
+            id: saver_date_label
+            x: 27
+            y: 193
+            text_color: white
+            text_font: font_date
+            text: ""
+
+    - id: idle_page
+      bg_image_src: idle_page_image
+      bg_image_opa: COVER
+      bg_opa: transp
+      scrollbar_mode: "off"
+      scrollable: False
+      scroll_dir: "none"
+      on_load:
+        - lambda: |-
+            id(idle_timer_active) = true;
+            id(idle_page_timer).execute();
+      widgets:
+        - label:
+            id: muted_timer_label
+            align: CENTER
+            text_font: font_timer
+            text_color: 0xFFBF00
+            text: ""
+
+        - button:
+            id: btn_light_page
+            x: 33
+            y: 30
+            width: 105
+            height: 96
+            styles: transparent_btn_style
+            on_click:
+              - lvgl.page.show: lights_page
+
+        - button:
+            id: btn_media_page
+            x: 181
+            y: 30
+            width: 105
+            height: 96
+            styles: transparent_btn_style
+            on_click:
+              - lvgl.page.show: ext_media_page
+
+        - button:
+            id: btn_sensor_page
+            x: 33
+            y: 139
+            width: 105
+            height: 96
+            styles: transparent_btn_style
+            on_click:
+              - lvgl.page.show: HAVC_page
+
+        - button:
+            id: btn_esp32_setting_page
+            x: 181
+            y: 139
+            width: 105
+            height: 96
+            styles: transparent_btn_style
+            on_click:
+              - lvgl.page.show: esp32_setting_page
+
+            
+        - label:
+            id: idle_timer_label
+            align: CENTER
+            text_font: font_timer
+            text_color: amber
+            text: ""
+        
+    - id: lights_page
+      on_load:
+        - script.execute: refresh_lights_page_icons
+        - lambda: |-
+            id(idle_timer_active) = true;
+            id(idle_page_timer).execute();
+      bg_color: black
+      widgets:
+        # --- Light 1: top-left ---
+        - button:
+            id: btn_light1
+            x: 16
+            y: 40
+            width: 74
+            height: 74
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  id: light1_icon_label
+                  align: CENTER
+                  text_font: icon_font_45
+            on_click:
+              - homeassistant.action:
+                  action: light.toggle
+                  data:
+                    entity_id: ${light1}
+                  on_error:
+                    - logger.log: "Failed to toggle ${light1}"
+        - label:
+            align: TOP_LEFT
+            x: 16
+            y: 120
+            width: 74
+            text_align: CENTER
+            text_font: font_request
+            text_color: white
+            text: "Night light"
+
+        # --- Light 2: top-middle ---
+        - button:
+            id: btn_light2
+            x: 123
+            y: 40
+            width: 74
+            height: 74
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  id: light2_icon_label
+                  align: CENTER
+                  text_font: icon_font_45
+            on_click:
+              - homeassistant.action:
+                  action: light.toggle
+                  data:
+                    entity_id: ${light2}
+                  on_error:
+                    - logger.log: "Failed to toggle ${light2}"
+        - label:
+            align: TOP_LEFT
+            x: 123
+            y: 120
+            width: 74
+            text_align: CENTER
+            text_font: font_request
+            text_color: white
+            text: "TV Lamp"
+
+        # --- "all lights" (double-click turns off light3) - bottom-left ---
+        # LVGL buttons have no native double-click event; the cleanest
+        # replacement is on_long_press, or track two clicks with a script +
+        # timer. Shown here using a script-based double-click detector.
+        - button:
+            id: btn_light3_all
+            x: 16
+            y: 135
+            width: 74
+            height: 74
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  id: light3_icon_label
+                  align: CENTER
+                  text_font: icon_font_45
+            on_click:
+              - script.execute: detect_alllight_double_click
+        - label:
+            align: TOP_LEFT
+            x: 16
+            y: 212
+            width: 74
+            text_align: CENTER
+            text_font: font_request
+            text_color: white
+            text: "All light"
+
+        # --- Light 4: bottom-middle ---
+        - button:
+            id: btn_light4
+            x: 123
+            y: 135
+            width: 74
+            height: 74
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  id: light4_icon_label
+                  align: CENTER
+                  text_font: icon_font_45
+            on_click:
+              - homeassistant.action:
+                  action: light.toggle
+                  data:
+                    entity_id: ${light4}
+                  on_error:
+                    - logger.log: "Failed to toggle ${light4}"
+        - label:
+            align: TOP_LEFT
+            x: 123
+            y: 212
+            width: 74
+            text_align: CENTER
+            text_font: font_request
+            text_color: white
+            text: "Rumpus"
+
+        # --- Light 5: top-right ---
+        - button:
+            id: btn_light5
+            x: 230
+            y: 40
+            width: 74
+            height: 74
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  id: light5_icon_label
+                  align: CENTER
+                  text_font: icon_font_45
+            on_click:
+              - homeassistant.action:
+                  action: light.toggle
+                  data:
+                    entity_id: ${light5}
+                  on_error:
+                    - logger.log: "Failed to toggle ${light5}"
+        - label:
+            align: TOP_LEFT
+            x: 230
+            y: 117
+            width: 74
+            text_align: CENTER
+            text_font: font_request
+            text_color: white
+            text: "Bed Lamp1"
+
+        # --- Light 6: bottom-right (turns off light5, on light6) ---
+        - button:
+            id: btn_light6
+            x: 230
+            y: 135
+            width: 74
+            height: 74
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  id: light6_icon_label
+                  align: CENTER
+                  text_font: icon_font_45
+            on_click:
+              - homeassistant.action:
+                  action: light.turn_off
+                  data:
+                    entity_id: ${light5}
+              - homeassistant.action:
+                  action: light.turn_on
+                  data:
+                    entity_id: ${light6}
+        - label:
+            align: TOP_LEFT
+            x: 230
+            y: 212
+            width: 74
+            text_align: CENTER
+            text_font: font_request
+            text_color: white
+            text: "To Lamp2"
+
+    ##########################################################################
+    - id: HAVC_page
+      bg_color: black
+      on_load:
+        - lambda: |-
+            id(idle_timer_active) = true;
+            id(idle_page_timer).execute();
+        - lvgl.label.update:
+            id: fan1_icon_label
+            text_color: !lambda 'return id(fan1_state).state ? Color(66, 135, 245) : Color(200,200,200);'
+      widgets:
+        - label:
+            align: TOP_MID
+            y: 75
+            text_font: font_status
+            text_color: 0xFFBF00
+            text: "Bathroom"
+
+        - button:
+            id: btn_fan1
+            x: 123
+            y: 118
+            width: 74
+            height: 74
+            styles: transparent_btn_style
+            widgets:
+              - label: #underneath the btn_fan1
+                  id: fan1_icon_label
+                  align: CENTER
+                  width: 46
+                  height: 46
+                  text_font: icon_font_45
+                  text: "\U000F0210"
+                  
+                  
+            on_click:
+              - homeassistant.action:
+                  action: switch.toggle
+                  data:
+                    entity_id: ${fan_switch1}
+                  on_error:
+                    - logger.log: "Failed to toggle ${fan_switch1}"
+
+    ##########################################################################
+    - id: ext_media_page
+      bg_color: black
+      scrollbar_mode: "off"
+      scrollable: False
+      scroll_dir: "none"
+      on_load:
+        - lambda: |-
+            id(idle_timer_active) = true;
+            id(idle_page_timer).execute();
+
+        - lvgl.slider.update:
+            id: ext_media_volume_slider
+            value: !lambda 'return int(id(volume_value) * 100);'
+        - lvgl.label.update:
+            id: ext_media_volume_pct_label
+            text: !lambda 'return str_sprintf("Vol: %.0f%%", id(volume_value) * 100);'
+      
+      widgets:
+        - label:
+            id: ext_media_title_label
+            align: TOP_MID
+            y: 15
+            text_font: my_font1
+            text_color: white
+            text: ""   # "<friendly_name> - <status>", updated on_value
+
+        - label: #music title
+            id: ext_media_track_label
+            align: TOP_MID
+            y: 45
+            text_font: music_title_font
+            text_color: white
+            text: "Title:unknown"
+
+        - button:
+            id: btn_ext_prev
+            x: 5
+            y: 90
+            width: 100
+            height: 80
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  align: CENTER
+                  text_font: icon_font_80
+                  text_color: 0x0000FF
+                  text: "\U000F04AE"
+            on_click:
+              - homeassistant.action:
+                  action: media_player.media_previous_track
+                  data:
+                    entity_id: media_player.${external_media_player}
+
+        - button: #Play/Pause button
+            id: btn_ext_play_pause
+            x: 110
+            y: 90
+            width: 100
+            height: 80
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  align: CENTER
+                  text_font: icon_font_80
+                  text_color: 0x0000FF
+                  text: "\U000F040E"
+            on_click:
+              - lambda: |-
+                  auto state = id(ha_media_status).state;
+                  if (state == "playing") {
+                    id(my_media_pause).execute();
+                  } else {
+                    id(my_media_play).execute();
+                  }
+
+        - button: #next song button
+            id: btn_ext_next
+            x: 215
+            y: 90
+            width: 100
+            height: 80
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  align: CENTER
+                  text_font: icon_font_80
+                  text_color: 0x0000FF
+                  text: "\U000F04AD"
+            on_click:
+              - homeassistant.action:
+                  action: media_player.media_next_track
+                  data:
+                    entity_id: media_player.${external_media_player}
+
+        - button:
+            id: btn_ext_mute
+            x: 0
+            y: 150
+            width: 40
+            height: 49
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  id: ext_mute_icon_label
+                  align: CENTER
+                  text_font: icon_font_25
+                  text_color: green
+                  text: "\U000F0581"
+            on_click:
+              - switch.toggle: ext_media_mute
+
+        - button: #Volume down
+            id: btn_ext_vol_down
+            x: 0
+            y: 200
+            width: 40
+            height: 40
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  align: CENTER
+                  text_font: icon_font_25
+                  text_color: 0x0000FF
+                  text: "\U000F075E"
+            on_click:
+              - homeassistant.action:
+                  action: media_player.volume_down
+                  data:
+                    entity_id: media_player.${external_media_player}
+              - lambda: |-
+                  int cur = lv_slider_get_value(id(ext_media_volume_slider));
+                  int new_val = cur - 10;
+                  if (new_val < 0) new_val = 0;
+                  lv_slider_set_value(id(ext_media_volume_slider), new_val, LV_ANIM_ON);
+              - lvgl.label.update:
+                  id: ext_media_volume_pct_label
+                  text: !lambda 'return str_sprintf("Vol: %d%%", lv_slider_get_value(id(ext_media_volume_slider)));'
+        - label:
+            id: ext_media_volume_pct_label
+            align: TOP_MID
+            y: 175
+            text_font: my_font1
+            text_color: white
+            text: "Vol: 0%"   # update in the slider's on_value
+        # Native slider replaces the whole manual x/ratio/clamp lambda.
+        - slider:
+            id: ext_media_volume_slider
+            x: 50
+            y: 205
+            width: 235
+            height: 20
+            min_value: 0
+            max_value: 100
+            bg_color: 0x00FF00
+            on_release:
+              - homeassistant.action:
+                  action: media_player.volume_set
+                  data:
+                    entity_id: media_player.${external_media_player}
+                    volume_level: !lambda 'return x / 100.0;'
+              - lvgl.label.update: 
+                  id: ext_media_volume_pct_label
+                  text: !lambda 'return str_sprintf("%d%%", x);'
+
+        - button:
+            id: btn_ext_vol_up
+            x: 286
+            y: 200
+            width: 34
+            height: 40
+            styles: transparent_btn_style
+            widgets:
+              - label:
+                  align: CENTER
+                  text_font: icon_font_25
+                  text_color: 0x0000FF
+                  text: "\U000F075D"
+            on_click:
+              - homeassistant.action:
+                  action: media_player.volume_up
+                  data:
+                    entity_id: media_player.${external_media_player}
+              - lambda: |-
+                  int cur = lv_slider_get_value(id(ext_media_volume_slider));
+                  int new_val = cur + 10;
+                  if (new_val > 100) new_val = 100;
+                  lv_slider_set_value(id(ext_media_volume_slider), new_val, LV_ANIM_ON);
+              - lvgl.label.update:
+                  id: ext_media_volume_pct_label
+                  text: !lambda 'return str_sprintf("Vol: %d%%", lv_slider_get_value(id(ext_media_volume_slider)));'
+    ##########################################################################
+    - id: esp32_setting_page
+      bg_color: 0x000000
+      bg_opa: COVER
+      bg_image_src: scene_image
+      bg_image_opa: COVER
+      scrollbar_mode: "off"
+      scrollable: False
+      scroll_dir: "none"
+      on_load:
+        - lambda: |-
+            id(idle_timer_active) = true;
+            id(idle_page_timer).execute();
+        ##update the brightness value and volume value to slider
+        - lvgl.slider.update:
+            id: brightness_slider
+            value: !lambda 'return int(id(screen_brightness_value) * 100);'
+        - lvgl.label.update:
+            id: brightness_pct_label
+            text: !lambda 'return str_sprintf("%.0f%%", id(screen_brightness_value) * 100);'
+        - lvgl.slider.update:
+            id: local_volume_slider
+            #value: !lambda 'return int(id(local_volume_value) * 100);'
+            value: !lambda 'return int(id(volume_value) * 100);'
+        - lvgl.label.update:
+            id: local_volume_pct_label
+            text: !lambda 'return str_sprintf("%.0f%%", id(volume_value) * 100);'
+      
+      widgets:
+        - label: #Brightness high
+            x: 5
+            y: 8
+            text_font: icon_font_25
+            text_color: 0xFF0000
+            text: "\U000F06E8"   # high
+        - slider:
+            id: brightness_slider
+            x: 10
+            y: 65
+            width: 20
+            height: 140
+            min_value: 1
+            max_value: 95
+            bg_color: 0xFFBF00
+            on_value:
+              - globals.set:
+                  id: screen_brightness_value
+                  value: !lambda "return x / 100.0;"
+
+              - light.turn_on:
+                  id: led
+                  brightness: !lambda "return x / 100.0;"
+                  transition_length: 200ms
+              
+              - lvgl.label.update: 
+                  id: brightness_pct_label
+                  text: !lambda 'return str_sprintf("%.0f%%", id(screen_brightness_value) * 100);'
+
+        - label:
+            id: brightness_pct_label
+            x: 5
+            y: 210
+            text_font: font_status
+            text_color: white
+            text: ""   # update from brightness_slider on_value
+
+        # --- Local speaker volume (vertical slider) ---
+        - label:
+            x: 270
+            y: 5
+            text_font: icon_font_25
+            text_color: 0x0000FF
+            text: "\U000F075D"   # up
+        - slider:
+            id: local_volume_slider
+            x: 270
+            y: 65
+            width: 20
+            height: 140
+            min_value: 1
+            max_value: 100
+            bg_color: 0x00FF00
+            on_release:
+              - lambda: |-
+                  int vol = lv_slider_get_value(id(local_volume_slider));
+                  id(local_volume_value) = vol / 100.0;
+              - media_player.volume_set:
+                  id: speaker_media_player
+                  volume: !lambda 'return id(local_volume_value);'
+              - lvgl.label.update:
+                  id: local_volume_pct_label
+                  text: !lambda 'return str_sprintf("%d%%", lv_slider_get_value(id(local_volume_slider)));'
+        - label:
+            id: local_volume_pct_label
+            x: 260
+            y: 210
+            text_font: font_status
+            text_color: white
+            text: ""   # update from local_volume_slider on_value
+
+        # --- Scene buttons ---
+        - button:
+            id: btn_scene_top_left
+            x: 69
+            y: 32
+            width: 79
+            height: 80
+            styles: transparent_btn_style
+            on_click:
+              - homeassistant.action:
+                  action: scene.turn_on
+                  data:
+                    entity_id: ${scene1}
+
+        - button:
+            id: btn_scene_top_right
+            x: 171
+            y: 32
+            width: 89
+            height: 80
+            styles: transparent_btn_style
+            on_click:
+              - homeassistant.action:
+                  action: scene.turn_on
+                  data:
+                    entity_id: ${scene2}
+
+        - button:
+            id: btn_scene_bottom_left
+            x: 69
+            y: 130
+            width: 79
+            height: 80
+            styles: transparent_btn_style
+            on_click:
+              - homeassistant.action:
+                  action: scene.turn_on
+                  data:
+                    entity_id: ${scene3}
+
+        - button:
+            id: btn_scene_bottom_right
+            x: 171
+            y: 130
+            width: 89
+            height: 80
+            styles: transparent_btn_style
+            on_click:
+              - homeassistant.action:
+                  action: scene.turn_on
+                  data:
+                    entity_id: ${scene4}
+        - label:
+            id: esp32_setting_version_label
+            align: BOTTOM_MID
+            y: -10
+            text_font: font_response
+            text_color: 0x00FF00
+            text: "Ver ${firmware_ver}"
+    - id: listening_page
+      widgets:
+        - image:
+            id: listening_page_image
+            src: casita_listening
+            align: CENTER
+
+    - id: timer_finished_page
+      bg_color: white
+      widgets:
+        - image:
+            src: casita_timer_finished
+            align: CENTER
+        - label:
+            align: TOP_MID
+            y: 75
+            text_font: font_status
+            text_color: 0x000000
+            text: "<< Press left top button OR"
+        - label:
+            align: TOP_MID
+            y: 105
+            text_font: font_status
+            text_color: 0x000000
+            text: "Tap icon above to stop"
+        - button:
+            id: btn_timer_dismiss
+            x: 0
+            y: 0
+            width: 100
+            height: 90
+            styles: transparent_btn_style
+            on_click:
+              - switch.turn_off: timer_ringing
+              - lvgl.page.show: idle_page
+              - light.turn_off: status_led
+
+    - id: error_page
+      widgets:
+        - image:
+            src: casita_error
+            align: CENTER
+
+    - id: no_ha_page
+      bg_color: white
+      bg_opa: cover
+      widgets:
+        - image:
+            src: error_no_ha
+            align: CENTER
+        - label:
+            id: va_status_label
+            x: 140
+            y: 120
+            text: "\U000F16BD \U000F07D1"
+            text_color: black
+            text_font: roboto_icons_25
+    - id: no_wifi_page
+      widgets:
+        - image:
+            src: error_no_wifi
+            align: CENTER
+
+    - id: initializing_page
+      widgets:
+        - image:
+            src: casita_initializing
+            align: CENTER
+
+    - id: muted_page
+      bg_color: 0x000000
+      widgets:
+        - obj:
+            id: muted_timer_widget
+            align: CENTER
+            width: 260
+            height: 40
+            hidden: true
+            styles: transparent_btn_style
+
+
+##############################################################################
+# Page-change hook: replaces your display's on_page_change lambda
+# (idle_timer_active handling). 
+##############################################################################
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      ignore_strapping_warning: true
+      mode: INPUT_PULLUP
+      inverted: true
+    id: left_top_button
+    internal: true
+    on_multi_click:
+      - timing:
+          - ON for at least 50ms
+          - OFF for at least 50ms
+        then:
+          - switch.turn_off: timer_ringing
+          - light.turn_off: status_led
+          - lvgl.page.show: idle_page
+
+  - platform: gt911
+    id: home_button
+    index: 0
+    on_press:
+      then:
+        - if: 
+            condition: 
+              lambda: 'return id(idle_page)->is_showing();'
+            then:
+              - lvgl.page.show: saver_page
+            else:
+              - lvgl.page.show: idle_page
+  - platform: homeassistant
+    id: light1_state
+    entity_id: ${light1}
+    on_state:
+      - lvgl.label.update:
+          id: light1_icon_label
+          text: !lambda 'return x ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return x ? Color(255,165,0) : Color(200,200,200);'
+  - platform: homeassistant
+    id: light2_state
+    entity_id: ${light2}
+    on_state:
+      - lvgl.label.update:
+          id: light2_icon_label
+          text: !lambda 'return x ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return x ? Color(255,165,0) : Color(200,200,200);'
+  - platform: homeassistant
+    id: light3_state
+    entity_id: ${light3}
+    on_state:
+      - lvgl.label.update:
+          id: light3_icon_label
+          text: !lambda 'return x ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return x ? Color(255,165,0) : Color(200,200,200);'
+  - platform: homeassistant
+    id: light4_state
+    entity_id: ${light4}
+    on_state:
+      - lvgl.label.update:
+          id: light4_icon_label
+          text: !lambda 'return x ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return x ? Color(255,165,0) : Color(200,200,200);'
+  - platform: homeassistant
+    id: light5_state
+    entity_id: ${light5}
+    on_state:
+      - lvgl.label.update:
+          id: light5_icon_label
+          text: !lambda 'return x ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return x ? Color(255,165,0) : Color(200,200,200);'
+  - platform: homeassistant
+    id: light6_state
+    entity_id: ${light6}
+    on_state:
+      - lvgl.label.update:
+          id: light6_icon_label
+          text: !lambda 'return x ? std::string("\U000F06E8") : std::string("\U000F0335");'
+          text_color: !lambda 'return x ? Color(255,165,0) : Color(200,200,200);'
+  - platform: homeassistant
+    id: fan1_state
+    entity_id: ${fan_switch1}
+    on_state:
+      - lvgl.label.update:
+          id: fan1_icon_label
+          text_color: !lambda 'return x ? Color(255,165,0) : Color(200,200,200);'
+
