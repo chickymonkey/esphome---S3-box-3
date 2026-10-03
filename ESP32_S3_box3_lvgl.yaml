@@ -4,7 +4,8 @@
 ## 1.7.2: added chinese font support
 ## 1.7.3: added 3rd column to the light page, and added bathroom exhaust fan to it.
 ## 1.8: added weather on saver page, added bedside lamp.
-## 2.0: changed the display to lvgl, added animation to the Exhaust fan icon. 
+## 1.9: lvgl modification on the UI.
+## 2.0: Added duct heater in havc.
 ## created the original ha media player variable ${external_media_player_ha} pointing to "xiaomi_l05c_0979_play_control", due to the lack of "volume_set" in the new version of "Music assistant" 
 ---
 substitutions:
@@ -19,7 +20,7 @@ substitutions:
   ##switches
   fan_switch1: "switch.bathroom_fan"
 
-  #####  Media player (Entity ID without device type media_player, find this from home assistant device list)
+  #####  Media player (Entity ID without device type media_player, use this from music assistant media player list)
   external_media_player: esp32_s3_box_3b_v17_2
   external_media_player_ha: esp32_s3_box_3b_v17_2
   ##Scene list
@@ -27,29 +28,22 @@ substitutions:
   scene2: scene.morning
   scene3: scene.movie_night
   scene4: scene.away_home
-  ## End of HA entities list, don't change anything below:
 
+  ##temperature sensors (primary / failover)
+  ha_min_temp_sensor1: "sensor.today_min_temperature"
+  ha_min_temp_sensor2: "sensor.temp_min_today"
+  ha_max_temp_sensor1: "sensor.temp_max_today"
+  ha_max_temp_sensor2: "sensor.today_max_temperature"
+
+  ## End of HA entities list, don't change anything below:
   ##volume
   volume_min: 0.1
   volume_max: 0.9
   bar_x1: 50
   bar_w: 230
-  bar_y1: 218
-  bar_h: 3
   ##ESP32 local speaker ## Volume verticle Slider
   local_volume_min: 0.1
   local_volume_max: 0.9
-  local_bar_x1: 298
-  local_bar_w: 2
-  local_bar_y1: 70
-  local_bar_h: 130
-  ## Brightness vertical slider (left side)
-  brightness_min: 0.2
-  brightness_max: 1.0
-  bright_bar_x1: 20
-  bright_bar_w: 2
-  bright_bar_y1: 72
-  bright_bar_h: 130
 
   loading_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/loading_320_240.png
   idle_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/idle_320_240.png
@@ -80,7 +74,6 @@ substitutions:
   voice_assist_timer_finished_phase_id: "20"
 
 #####  Days and months #####
-## Change the values on the right to match your locale ##
   monday: Mon
   tuesday: Tue
   wednesday: Wed
@@ -130,23 +123,40 @@ esphome:
           data:
             entity_id: media_player.${external_media_player}
       - delay: 1s      ##Initialize volume from HA API - 
-      - lambda: |-
-          //Ext player variable init
-          if (id(ha_media_volume).has_state()) {
-            float vol = std::stof(id(ha_media_volume).state);
-            vol = roundf(vol * 100.0f) / 100.0f;
-            id(volume_value) = vol;
-            const int bar_x1 = ${bar_x1};
-            const int bar_w  = ${bar_w};
-            id(last_touch_x) = bar_x1 + (vol * bar_w);
 
-            ESP_LOGD("main", "On Boot - synced volume from HA: %.2f", vol);
-          } else {
-            ESP_LOGW("main", "No initial HA volume available on boot");
-          }
+      - lvgl.label.update:
+          id: saver_hour_label
+          text: !lambda |-
+            auto now = id(ha_time).now();
+            if (!now.is_valid()) return "";
+            int hour_val = now.hour % 12;
+            if (hour_val == 0) hour_val = 12;
 
+            char hour_str[6];
+            if (hour_val == 11) {
+              snprintf(hour_str, sizeof(hour_str), "1 1");
+            } else {
+              snprintf(hour_str, sizeof(hour_str), "%02d", hour_val);
+            }
+            return std::string(hour_str) + ":";
+
+      - lvgl.label.update:
+          id: saver_minute_label
+          text: !lambda |-
+            auto now = id(ha_time).now();
+            if (!now.is_valid()) return "";
+            int min_val = now.minute;
+
+            char min_str[6];
+            if (min_val == 11) {
+              snprintf(min_str, sizeof(min_str), "1 1");
+            } else {
+              snprintf(min_str, sizeof(min_str), "%02d", min_val);
+            }
+            return std::string(min_str);
       - component.update: s3_box_lcd
-
+      - script.execute: update_clock
+    
 esp32:
   board: esp32s3box
   flash_size: 16MB
@@ -182,7 +192,6 @@ api:
     - component.update: s3_box_lcd
 ota:
   - platform: esphome
-    password: "d8ff4b288fc4414f9c83ae58bc20b857"
 # Enable logging
 logger:
   level: DEBUG
@@ -207,43 +216,7 @@ time:
     on_time:
       - seconds: 0, 15, 30
         then:
-          - lvgl.label.update:
-              id: saver_hour_label
-              text: !lambda |-
-                auto now = id(ha_time).now();
-                if (!now.is_valid()) return "";
-                int hour_val = now.hour % 12;
-                if (hour_val == 0) hour_val = 12;
-
-                char hour_str[6];
-                if (hour_val == 11) {
-                  snprintf(hour_str, sizeof(hour_str), "1 1");
-                } else {
-                  snprintf(hour_str, sizeof(hour_str), "%02d", hour_val);
-                }
-                return std::string(hour_str) + ":";
-
-          - lvgl.label.update:
-              id: saver_minute_label
-              text: !lambda |-
-                auto now = id(ha_time).now();
-                if (!now.is_valid()) return "";
-                int min_val = now.minute;
-
-                char min_str[6];
-                if (min_val == 11) {
-                  snprintf(min_str, sizeof(min_str), "1 1");
-                } else {
-                  snprintf(min_str, sizeof(min_str), "%02d", min_val);
-                }
-                return std::string(min_str);
-
-          - lvgl.label.update:
-              id: saver_ampm_label
-              text: !lambda |-
-                auto now = id(ha_time).now();
-                if (!now.is_valid()) return "";
-                return now.hour < 12 ? std::string("A\nM") : std::string("P\nM");
+          - script.execute: update_clock
 
           - lvgl.label.update:
               id: saver_day_label
@@ -262,12 +235,16 @@ time:
                 auto now = id(ha_time).now();
                 if (!now.is_valid()) return "";
                 return now.strftime("%d %b");
-            # Hide everything except hour/minute at 12:10 AM
+      # Hide everything except hour/minute at 12:00 AM then repeat every hour
       - seconds: 0
         minutes: 0
         hours: 0,1,2,3,4,5
         then:
           - script.execute: saver_night_mode_hide
+          - light.turn_on:
+                id: led
+                brightness: 28%
+                transition_length: 210ms
 
       # Show everything again at 7:00 AM
       - seconds: 0
@@ -275,6 +252,10 @@ time:
         hours: 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
         then:
           - script.execute: saver_night_mode_show
+          - light.turn_on:
+                id: led
+                brightness: 50%
+                transition_length: 210ms
 
 http_request:
   verify_ssl: 'false'
@@ -370,7 +351,7 @@ interval:
                     - logger.log:
                         format: "HTTP Error: %d"
                         args: [ 'response->status_code' ]
-  - interval: 100ms
+  - interval: 100ms # FAN animation when it's on
     then:
       - if:
           condition:
@@ -384,6 +365,7 @@ interval:
                   return a;
                 transform_pivot_x: 23
                 transform_pivot_y: 23
+                
 button:
   - platform: factory_reset
     id: factory_reset_btn
@@ -414,7 +396,6 @@ light:
     id: led
     name: Screen
     icon: "mdi:television"
-    internal: True
     entity_category: config
     output: backlight_output
     restore_mode: RESTORE_DEFAULT_ON
@@ -535,7 +516,7 @@ media_player:
             # Ensure VA stops before moving on
             - if:
                 condition:
-                  - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+                  - lambda: return id(wake_word_engine_location).current_option() == "In Home Assistant";
                 then:
                   - wait_until:
                       - not:
@@ -640,7 +621,7 @@ voice_assistant:
     # Restart only mWW if enabled; streaming wake words automatically restart
     - if:
         condition:
-          - lambda: return id(wake_word_engine_location).state == "On device";
+          - lambda: return id(wake_word_engine_location).current_option() == "On device";
         then:
           - lambda: id(va).set_use_wake_word(false);
           - micro_wake_word.start:
@@ -748,15 +729,27 @@ script:
                   - lvgl.label.update:
                       id: va_phase_label
                       text: !lambda |-
+                        using S = media_player::MediaPlayerState;
+                        bool music_active = (id(speaker_media_player).state == S::MEDIA_PLAYER_STATE_PLAYING)
+                                             && !(id(speaker_media_player).state == S::MEDIA_PLAYER_STATE_ANNOUNCING);
+
+                        // Let active VA interaction states take priority over the "playing music" label
                         switch (id(voice_assistant_phase)) {
-                          case 1:  return "Idle";
                           case 2:  return "Listening...";
                           case 3:  return "Thinking...";
                           case 4:  return "Replying...";
-                          case 10: return "Not ready";
                           case 11: return "Error";
-                          case 12: return "Muted";
                           case 20: return "Timer finish";
+                        }
+
+                        if (music_active) {
+                          return "Playing Music";
+                        }
+
+                        switch (id(voice_assistant_phase)) {
+                          case 1:  return "Idle";
+                          case 10: return "Not ready";
+                          case 12: return "Muted";
                           default: return "Idle";
                         }
                   - lvgl.label.update:
@@ -800,53 +793,6 @@ script:
             - lvgl.widget.redraw: va_response_label
             - lvgl.widget.redraw: idle_timer_label
       - script.execute: update_timer_progress
-  - id: fetch_first_active_timer
-    then:
-      - lambda: |
-          const auto &timers = id(va).get_timers();
-          auto output_timer = *timers.begin();
-          for (const auto &timer : timers) {
-            if (timer.is_active && timer.seconds_left <= output_timer.seconds_left) {
-              output_timer = timer;
-            }
-          }
-          id(global_first_active_timer) = output_timer;
-
-  - id: check_if_timers_active
-    then:
-      - lambda: |
-          const auto &timers = id(va).get_timers();
-          bool output = false;
-          for (const auto &timer : timers) {
-            if (timer.is_active) {
-              output = true;
-            }
-          }
-          id(global_is_timer_active) = output;
-
-  - id: fetch_first_timer
-    then:
-      - lambda: |
-          const auto &timers = id(va).get_timers();
-          auto output_timer = *timers.begin();
-          for (const auto &timer : timers) {
-            if (timer.seconds_left <= output_timer.seconds_left) {
-              output_timer = timer;
-            }
-          }
-          id(global_first_timer) = output_timer;
-
-  - id: check_if_timers
-    then:
-      - lambda: |
-          const auto &timers = id(va).get_timers();
-          bool output = false;
-          for (const auto &timer : timers) {
-            if (timer.is_active) {
-              output = true;
-            }
-          }
-          id(global_is_timer) = output;
 
   # Starts either mWW or the streaming wake word, depending on the configured location
   - id: start_wake_word
@@ -856,7 +802,7 @@ script:
             and:
               - not:
                   - voice_assistant.is_running:
-              - lambda: return id(wake_word_engine_location).state == "On device";
+              - lambda: return id(wake_word_engine_location).current_option() == "On device";
           then:
             - lambda: id(va).set_use_wake_word(false);
             - micro_wake_word.start:
@@ -865,7 +811,7 @@ script:
             and:
               - not:
                   - voice_assistant.is_running:
-              - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+              - lambda: return id(wake_word_engine_location).current_option() == "In Home Assistant";
           then:
             - lambda: id(va).set_use_wake_word(true);
             - voice_assistant.start_continuous:
@@ -875,13 +821,13 @@ script:
     then:
       - if:
           condition:
-            lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+            lambda: return id(wake_word_engine_location).current_option() == "In Home Assistant";
           then:
             - lambda: id(va).set_use_wake_word(false);
             - voice_assistant.stop:
       - if:
           condition:
-            lambda: return id(wake_word_engine_location).state == "On device";
+            lambda: return id(wake_word_engine_location).current_option() == "On device";
           then:
             - micro_wake_word.stop:
 
@@ -916,10 +862,14 @@ script:
           condition:
             lambda: 'return id(idle_timer_active);'
           then:
-            - light.turn_on:
-                id: led
-                brightness: 40%
-                transition_length: 315ms
+            - lambda: |-
+                auto now = id(ha_time).now();
+                float b = id(day_brightness);
+                if (now.is_valid() && now.hour >= 0 && now.hour <= 5) {
+                  b = id(night_brightness);
+                }
+                id(led).turn_on().set_brightness(b).set_transition_length(315).perform();
+
             - script.execute: saver_enabled
 
   # refresh lights page
@@ -964,7 +914,7 @@ script:
     then:
       - if:
           condition:
-            - lambda: return id(wake_word_engine_location).state == "On device";
+            - lambda: return id(wake_word_engine_location).current_option() == "On device";
             - switch.is_on: use_listen_light
           then:
             - light.turn_on:
@@ -977,7 +927,7 @@ script:
           else:
             - if:
                 condition:
-                  - lambda: return id(wake_word_engine_location).state != "On device";
+                  - lambda: return id(wake_word_engine_location).current_option() != "On device";
                   - switch.is_on: use_listen_light
                 then:
                   - light.turn_on:
@@ -1013,6 +963,7 @@ script:
       - lvgl.widget.hide: saver_weather_icon_label
       - lvgl.widget.hide: saver_min_temp_label
       - lvgl.widget.hide: saver_max_temp_label
+      - lvgl.widget.hide: horizontal_line
       - lvgl.widget.hide: saver_ampm_label
       - lvgl.widget.hide: saver_day_label
       - lvgl.widget.hide: saver_date_label
@@ -1023,6 +974,7 @@ script:
       - lvgl.widget.show: saver_weather_icon_label
       - lvgl.widget.show: saver_min_temp_label
       - lvgl.widget.show: saver_max_temp_label
+      - lvgl.widget.show: horizontal_line
       - lvgl.widget.show: saver_ampm_label
       - lvgl.widget.show: saver_day_label
       - lvgl.widget.show: saver_date_label
@@ -1141,6 +1093,62 @@ script:
                id: va_phase_label
                hidden: true
 
+  - id: update_clock
+    then:
+      - lvgl.label.update:
+          id: saver_hour_label
+          text: !lambda |-
+            auto now = id(ha_time).now();
+            if (!now.is_valid()) return "";
+            int hour_val = now.hour % 12;
+            if (hour_val == 0) hour_val = 12;
+
+            char hour_str[6];
+            if (hour_val == 11) {
+              snprintf(hour_str, sizeof(hour_str), "1 1");
+            } else {
+              snprintf(hour_str, sizeof(hour_str), "%02d", hour_val);
+            }
+            return std::string(hour_str) + ":";
+
+      - lvgl.label.update:
+          id: saver_minute_label
+          text: !lambda |-
+            auto now = id(ha_time).now();
+            if (!now.is_valid()) return "";
+            int min_val = now.minute;
+
+            char min_str[6];
+            if (min_val == 11) {
+              snprintf(min_str, sizeof(min_str), "1 1");
+            } else {
+              snprintf(min_str, sizeof(min_str), "%02d", min_val);
+            }
+            return std::string(min_str);
+
+      - lvgl.label.update:
+          id: saver_ampm_label
+          text: !lambda |-
+            auto now = id(ha_time).now();
+            if (!now.is_valid()) return "";
+            return now.hour < 12 ? std::string("A\nM") : std::string("P\nM");
+  - id: update_saver_temps
+    mode: restart
+    then:
+      - lvgl.label.update:
+          id: saver_min_temp_label
+          text: !lambda |-
+            float v = id(min_temp_today).state;
+            if (std::isnan(v)) v = id(min_temp_fallback).state;
+            if (std::isnan(v)) return std::string("-- - ");
+            return str_sprintf("%.0f", v) + " - ";
+      - lvgl.label.update:
+          id: saver_max_temp_label
+          text: !lambda |-
+            float v = id(max_temp_today).state;
+            if (std::isnan(v)) v = id(max_temp_fallback).state;
+            if (std::isnan(v)) return std::string("-- °C");
+            return str_sprintf("%.0f", v) + " °C";
 #end of script
 switch:
   - platform: gpio
@@ -1325,18 +1333,10 @@ globals:
     type: int
     restore_value: false
     initial_value: ${voice_assist_not_ready_phase_id}
-  - id: global_first_active_timer
-    type: voice_assistant::Timer
-    restore_value: false
-  - id: global_is_timer_active
-    type: bool
-    restore_value: false
   - id: global_first_timer
     type: voice_assistant::Timer
     restore_value: false
-  - id: global_is_timer
-    type: bool
-    restore_value: false
+
   ##below added for touch
   - id: api_connection
     type: bool
@@ -1392,15 +1392,6 @@ globals:
     restore_value: no
 
   # Last touch position on brightness bar
-  - id: bright_last_touch_y
-    type: int
-    restore_value: no
-    #initial_value: '150'
-
-  - id: bright_adjusting
-    type: bool
-    restore_value: no
-    initial_value: "false"
     
   - id: alllight_last_click
     type: uint32_t
@@ -1416,60 +1407,77 @@ globals:
     type: int
     restore_value: yes
     initial_value: "0"
+
+  #brightness setting
+  - id: day_brightness
+    type: float
+    restore_value: false
+    initial_value: '0.45'
+
+  - id: night_brightness
+    type: float
+    restore_value: false
+    initial_value: '0.25'
 image:
-  - file: ${error_illustration_file}
+  - platform: file
+    file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/error_320_240.png
     id: casita_error
     resize: 320x240
     type: RGB
     transparency: alpha_channel
-  - file: ${idle_illustration_file}
+  - platform: file
+    file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/idle_320_240.png
     id: casita_idle
     resize: 320x240
     type: RGB
     transparency: alpha_channel
-  - file: ${listening_illustration_file}
+  - platform: file
+    file: https://raw.githubusercontent.com/chickymonkey/esphome/ceb4b22c604abc93c7b93dba7ec3510f9462e740/image/breathing_listening2_320.gif
     id: casita_listening
     resize: 320x240
     type: RGB
     transparency: alpha_channel
-  - file: ${thinking_illustration_file}
+  - platform: file
+    file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/thinking_320_240.png
     id: casita_thinking
     resize: 320x240
     type: RGB
     transparency: alpha_channel
-  - file: ${replying_illustration_file}
+  - platform: file
+    file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/replying_320_240.png
     id: casita_replying
     resize: 320x240
     type: RGB
     transparency: alpha_channel
-  - file: ${timer_finished_illustration_file}
+  - platform: file
+    file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/timer_finished_320_240.png
     id: casita_timer_finished
     resize: 320x240
     type: RGB
     transparency: alpha_channel
-  - file: ${loading_illustration_file}
+  - platform: file
+    file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/loading_320_240.png
     id: casita_initializing
     resize: 320x240
     type: RGB
     transparency: alpha_channel
-  - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-wifi.png
-    id: error_no_wifi
-    resize: 320x240
-    type: RGB
-    transparency: alpha_channel
-  - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-ha.png
+  - platform: file
+    file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-ha.png
     id: error_no_ha
     resize: 320x240
     type: RGB
     transparency: alpha_channel
-  - file: ${idle_page_file}
+  - platform: file
+    file: https://raw.githubusercontent.com/chickymonkey/esphome/ceb4b22c604abc93c7b93dba7ec3510f9462e740/image/idle_page_button320.jpg
     id: idle_page_image
     resize: 320x240
     type: RGB
-  - file: ${scene_file}
+  - platform: file
+    file: /config/esphome/images/s3box/scene_200.png
     id: scene_image
     resize: 200x186
     type: RGB
+#end of image:
 font:
   - file:
       type: gfonts
@@ -1519,7 +1527,7 @@ font:
       family: ${font_family_clock}
       weight: 500
     id: font_saver_temp
-    size: 36
+    size: 35
     glyphs: "APMC0123456789°:- "
 
   - file:
@@ -1752,13 +1760,13 @@ color:
   - id: paused_timer_color
     hex: '3b89e3'
   - id: black
-    hex: '000000'
+    hex: '09111B'
   - id: white
     hex: 'ffffff'
   - id: purple
     hex: '73264D'
-  - id: light_blue
-    hex: 'CFE2F3'
+  - id: grey
+    hex: '7F8A99'
   - id: green
     hex: '75D15F'
   - id: red
@@ -1768,7 +1776,8 @@ color:
   - id: blue_drk
     hex: '085296'
   - id: amber
-    hex: 'FBAB35'
+    hex: 'FB7035'
+    #hex: 'FBAB35'
   - id: lime
     hex: '20FC30'
   - id: pink
@@ -1919,24 +1928,35 @@ sensor:
   - platform: homeassistant #"Min Temp Today"
     id: min_temp_today
     name: "Min Temp Today"
-    entity_id: sensor.temp_min_today
+    entity_id: ${ha_min_temp_sensor1}
     on_value:
       then:
-        - lvgl.label.update:
-            id: saver_min_temp_label
-            text: !lambda |-
-              return str_sprintf("%.0f", x) + " -";
-              
+        - script.execute: update_saver_temps
+
   - platform: homeassistant #"Max Temp Today"
     id: max_temp_today
     name: "Max Temp Today"
-    entity_id: sensor.temp_max_today
+    entity_id: ${ha_max_temp_sensor1}
     on_value:
       then:
-        - lvgl.label.update:
-            id: saver_max_temp_label
-            text: !lambda |-
-              return str_sprintf("%.0f", x) + " °C";
+        - script.execute: update_saver_temps
+
+  # Failover sensors
+  - platform: homeassistant
+    id: min_temp_fallback
+    entity_id: ${ha_min_temp_sensor2}
+    internal: true
+    on_value:
+      then:
+        - script.execute: update_saver_temps
+
+  - platform: homeassistant
+    id: max_temp_fallback
+    entity_id: ${ha_max_temp_sensor2}
+    internal: true
+    on_value:
+      then:
+        - script.execute: update_saver_temps
   
   #API data sensor
   - platform: template
@@ -1962,12 +1982,12 @@ sensor:
         - lvgl.label.update:
             id: ext_media_volume_pct_label
             text: !lambda 'return str_sprintf("Vol: %d%%", int(x * 100));'
+
 display:
   - platform: mipi_spi
     model: S3BOX
     invert_colors: false
     id: s3_box_lcd
-    #change from 40MHz to 20MHz will create more RAM for Voice Assistant response
     data_rate: 20MHz
     cs_pin: 5
     dc_pin: 4
@@ -2079,29 +2099,30 @@ lvgl:
             y: 10
             text_color: white
             text_font: icon_font_45
-            text: ""   # set via sensor on_value
+            text: ""   # Weather icon via sensor on_value
 
         - label:
             id: saver_min_temp_label
-            x: 100
+            x: 95
             y: 5
             text_color: white
             text_font: font_saver_temp
             text: ""
         - label:
             id: saver_max_temp_label
-            x: 165
+            x: 185
             y: 5
             text_color: white
             text_font: font_saver_temp
             text: ""
         
         - obj:
+            id: horizontal_line
             x: 20
             y: 58
             width: 280
             height: 2
-            bg_color: white
+            bg_color: grey
 
         - label:
             id: saver_hour_label
@@ -2215,6 +2236,12 @@ lvgl:
             id(idle_page_timer).execute();
       bg_color: black
       widgets:
+        - label:
+            align: TOP_MID
+            y: 10
+            text_font: font_status
+            text_color: 0xFFBF00
+            text: "Lights"
         # --- Light 1: top-left ---
         - button:
             id: btn_light1
@@ -2276,9 +2303,7 @@ lvgl:
             text: "TV Lamp"
 
         # --- "all lights" (double-click turns off light3) - bottom-left ---
-        # LVGL buttons have no native double-click event; the cleanest
-        # replacement is on_long_press, or track two clicks with a script +
-        # timer. Shown here using a script-based double-click detector.
+
         - button:
             id: btn_light3_all
             x: 16
@@ -2404,11 +2429,11 @@ lvgl:
             id(idle_page_timer).execute();
         - lvgl.label.update:
             id: fan1_icon_label
-            text_color: !lambda 'return id(fan1_state).state ? Color(66, 135, 245) : Color(200,200,200);'
+            text_color: !lambda 'return id(fan1_state).state ? Color(66, 200, 245) : Color(200,200,200);'
       widgets:
         - label:
             align: TOP_MID
-            y: 75
+            y: 25
             text_font: font_status
             text_color: 0xFFBF00
             text: "Bathroom"
@@ -2416,7 +2441,7 @@ lvgl:
         - button:
             id: btn_fan1
             x: 123
-            y: 118
+            y: 70
             width: 74
             height: 74
             styles: transparent_btn_style
@@ -2438,7 +2463,37 @@ lvgl:
                   on_error:
                     - logger.log: "Failed to toggle ${fan_switch1}"
 
-    ##########################################################################
+        - label:
+            align: TOP_MID
+            y: 135
+            text_font: font_status
+            text_color: 0xFFBF00
+            text: "Duct Heater"
+        - switch:
+            id: sw_rinnai_touch
+            align: TOP_MID
+            y: 180
+
+            max_width: 80
+            width: 80
+            height: 38
+            on_value:
+              then:
+                - if:
+                    condition:
+                      lambda: 'return x;'
+                    then:
+                      - homeassistant.action:
+                          action: switch.turn_on
+                          data:
+                            entity_id: switch.rinnai_touch_on_off_switch
+                    else:
+                      - homeassistant.action:
+                          action: switch.turn_off
+                          data:
+                            entity_id: switch.rinnai_touch_on_off_switch
+
+    ####################### Media Page ###############
     - id: ext_media_page
       bg_color: black
       scrollbar_mode: "off"
@@ -2629,7 +2684,7 @@ lvgl:
               - lvgl.label.update:
                   id: ext_media_volume_pct_label
                   text: !lambda 'return str_sprintf("Vol: %d%%", lv_slider_get_value(id(ext_media_volume_slider)));'
-    ##########################################################################
+    ##########Setting page
     - id: esp32_setting_page
       bg_color: 0x000000
       bg_opa: COVER
@@ -2845,11 +2900,6 @@ lvgl:
             text: "\U000F16BD \U000F07D1"
             text_color: black
             text_font: roboto_icons_25
-    - id: no_wifi_page
-      widgets:
-        - image:
-            src: error_no_wifi
-            align: CENTER
 
     - id: initializing_page
       widgets:
@@ -2857,20 +2907,6 @@ lvgl:
             src: casita_initializing
             align: CENTER
 
-    - id: muted_page
-      bg_color: 0x000000
-      widgets:
-        - obj:
-            id: muted_timer_widget
-            align: CENTER
-            width: 260
-            height: 40
-            hidden: true
-            styles: transparent_btn_style
-
-
-##############################################################################
-# Page-change hook: replaces your display's on_page_change lambda
 # (idle_timer_active handling). 
 ##############################################################################
 binary_sensor:
@@ -2957,5 +2993,14 @@ binary_sensor:
     on_state:
       - lvgl.label.update:
           id: fan1_icon_label
-          text_color: !lambda 'return x ? Color(255,165,0) : Color(200,200,200);'
+          text_color: !lambda 'return x ? Color(66, 200, 245) : Color(200,200,200);'
 
+  - platform: homeassistant
+    id: rinnai_touch_state
+    entity_id: switch.rinnai_touch_on_off_switch
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: sw_rinnai_touch
+            state:
+              checked: !lambda 'return x;'
